@@ -1,0 +1,18 @@
+dotnet add package Microsoft.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+
+
+
+
+/AtivoPlus
+│── /Models
+│     ├── Produto.cs        # Modelo de Dados
+│── /DTOs
+│     ├── CreateProdutoDTO.cs  # Objeto de Transferência de Dados
+│── /Data
+│     ├── AppDbContext.cs  # Contexto do Entity Framework Core
+│── /Controllers
+│     ├── ProdutoController.cs  # API que trata as requisições
+│── appsettings.json  # Configuração do PostgreSQL
+│── Program.cs  # Configuração principal da aplicação
