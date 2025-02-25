@@ -7,7 +7,7 @@ using AtivoPlus.Models;
 
 namespace AtivoPlus.Controllers
 {
-    [Route("api/[controller]")] // A API está definida em "api/produto"
+    [Route("api/produto")] // A API está definida em "api/produto"
     [ApiController] // Indica que este é um Controller de API
     public class ProdutoController : ControllerBase
     {

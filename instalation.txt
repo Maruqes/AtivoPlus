@@ -16,3 +16,10 @@ dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 │     ├── ProdutoController.cs  # API que trata as requisições
 │── appsettings.json  # Configuração do PostgreSQL
 │── Program.cs  # Configuração principal da aplicação
+
+
+
+
+migrar db do cs para o banco
+dotnet ef migrations add InitialCreate
+dotnet ef database update
