@@ -18,6 +18,8 @@ namespace AtivoPlus.Controllers
             _context = context;
         }
 
+
+
         // 📌 GET: api/produto → Retorna todos os produtos
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Produto>>> ObterProdutos()
