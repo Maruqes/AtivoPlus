@@ -11,11 +11,11 @@ namespace AtivoPlus.Controllers
     [ApiController] // Indica que este é um Controller de API
     public class ProdutoController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext db;
 
         public ProdutoController(AppDbContext context)
         {
-            _context = context;
+            db = context;
         }
 
 
@@ -24,14 +24,14 @@ namespace AtivoPlus.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Produto>>> ObterProdutos()
         {
-            return await _context.Produtos.ToListAsync();
+            return await db.Produtos.ToListAsync();
         }
 
         // 📌 GET: api/produto/{id} → Retorna um único produto por ID
         [HttpGet("{id}")]
         public async Task<ActionResult<Produto>> ObterProduto(int id)
         {
-            var produto = await _context.Produtos.FindAsync(id);
+            var produto = await db.Produtos.FindAsync(id);
             if (produto == null)
                 return NotFound("Produto não encontrado.");
             return produto;
@@ -50,8 +50,8 @@ namespace AtivoPlus.Controllers
                 Preco = produtoDto.Preco,
             };
 
-            _context.Produtos.Add(produto);
-            await _context.SaveChangesAsync();
+            db.Produtos.Add(produto);
+            await db.SaveChangesAsync();
 
             return CreatedAtAction(nameof(ObterProduto), new { id = produto.Id }, produto);
         }
@@ -60,14 +60,14 @@ namespace AtivoPlus.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> AtualizarProduto(int id, [FromBody] Produto produtoDto)
         {
-            var produto = await _context.Produtos.FindAsync(id);
+            var produto = await db.Produtos.FindAsync(id);
             if (produto == null)
                 return NotFound("Produto não encontrado.");
 
             produto.Nome = produtoDto.Nome;
             produto.Preco = produtoDto.Preco;
 
-            await _context.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return NoContent(); // Retorna 204 No Content se for bem-sucedido
         }
 
@@ -75,12 +75,12 @@ namespace AtivoPlus.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> ApagarProduto(int id)
         {
-            var produto = await _context.Produtos.FindAsync(id);
+            var produto = await db.Produtos.FindAsync(id);
             if (produto == null)
                 return NotFound("Produto não encontrado.");
 
-            _context.Produtos.Remove(produto);
-            await _context.SaveChangesAsync();
+            db.Produtos.Remove(produto);
+            await db.SaveChangesAsync();
 
             return NoContent(); // Retorna 204 No Content se for bem-sucedido
         }

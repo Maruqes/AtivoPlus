@@ -1,0 +1,43 @@
+<script>
+    function addUser() {
+        console.log('add user');
+        console.log('${window.location.origin}/api/user/adicionar');
+        fetch(`${window.location.origin}/api/user/adicionar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                Nome: 'John Doe',
+                Idade: 23,
+            }),
+        })
+            .then(response => response.text())
+            .then(text => {
+                const data = text ? JSON.parse(text) : {};
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+    function getUser() {
+        console.log('get user');
+        fetch(`${window.location.origin}/api/user/getTodos`)
+            .then(response => response.text())
+            .then(text => {
+                const data = text ? JSON.parse(text) : {};
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+
+<h1>ola</h1>
+<button onclick="addUser()">add user</button>
+<button onclick="getUser()">get user</button>
+<button onclick="addProduct()">add product</button>
+<button onclick="getProduct()">get product</button>

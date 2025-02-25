@@ -5,21 +5,13 @@ dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 
 
 
-/AtivoPlus
-│── /Models
-│     ├── Produto.cs        # Modelo de Dados
-│── /DTOs
-│     ├── CreateProdutoDTO.cs  # Objeto de Transferência de Dados
-│── /Data
-│     ├── AppDbContext.cs  # Contexto do Entity Framework Core
-│── /Controllers
-│     ├── ProdutoController.cs  # API que trata as requisições
-│── appsettings.json  # Configuração do PostgreSQL
-│── Program.cs  # Configuração principal da aplicação
-
-
-
-
 migrar db do cs para o banco
 dotnet ef migrations add InitialCreate
 dotnet ef database update
+
+
+{
+    "ConnectionStrings": {
+        "PostgreSqlConnection": "Host=yourip;Port=port;Database=db;Username=user;Password=pass"
+    }
+}

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AtivoPlus.Data;
 using AtivoPlus.Models;
+using AtivoPlus.Logic;
 
 //ou app a usar api ou da par por razor em cima desta merda
 
@@ -11,11 +12,11 @@ namespace AtivoPlus.Controllers
     [ApiController] // Indica que este é um Controller de API
     public class UserController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext db;
 
         public UserController(AppDbContext context)
         {
-            _context = context;
+            db = context;
         }
 
 
@@ -37,11 +38,18 @@ namespace AtivoPlus.Controllers
                 Idade = userE.Idade
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            db.Users.Add(user);
+            await db.SaveChangesAsync();
 
             return Ok(user);
         }
 
+
+        [HttpGet("getTodos")]
+        public async Task<ActionResult<List<User>>> GetTodos()
+        {
+            UserLogic.teste();
+            return await db.Users.ToListAsync();
+        }
     }
 }
