@@ -20,36 +20,25 @@ namespace AtivoPlus.Controllers
         }
 
 
-        /*
-            [HttpGet]  [HttpGet("{id}")]
-            [HttpPost]
-            [HttpPut]
-            [HttpDelete]
-
-            /api/user/adionar/user
-        */
+        public class UserRequest
+        {
+            public string Username { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty;
+        }
 
         [HttpPost("adicionar")]
-        public async Task<ActionResult<User>> AdicionarUser([FromBody] User userE)
+        public async Task<ActionResult<User>> AdicionarUser([FromBody] UserRequest request)
         {
-            var user = new User
-            {
-                Nome = userE.Nome,
-                Idade = userE.Idade
-            };
+            UserLogic.AddUser(db, request.Username, request.Password);
 
-            db.Users.Add(user);
-            await db.SaveChangesAsync();
-
-            return Ok(user);
+            return Ok();
         }
 
 
         [HttpGet("getTodos")]
         public async Task<ActionResult<List<User>>> GetTodos()
         {
-            UserLogic.teste();
-            return await db.Users.ToListAsync();
+            return await db.GetUsersByRawSqlAsync();
         }
     }
 }

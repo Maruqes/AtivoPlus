@@ -2,6 +2,9 @@ dotnet add package Microsoft.EntityFrameworkCore
 dotnet add package Microsoft.EntityFrameworkCore.Design
 dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 
+extra:
+dotnet add package BCrypt.Net-Next
+
 
 
 
@@ -15,3 +18,15 @@ dotnet-ef database update
         "PostgreSqlConnection": "Host=yourip;Port=port;Database=db;Username=user;Password=pass"
     }
 }
+
+
+
+
+        /*
+            [HttpGet]  [HttpGet("{id}")]
+            [HttpPost]
+            [HttpPut]
+            [HttpDelete]
+
+            /api/user/adionar/user
+        */
