@@ -6,8 +6,8 @@ dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 
 
 migrar db do cs para o banco
-dotnet ef migrations add InitialCreate
-dotnet ef database update
+dotnet-ef migrations add InitialCreate
+dotnet-ef database update
 
 
 {
