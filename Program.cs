@@ -1,4 +1,5 @@
 ﻿using AtivoPlus.Data;
+using AtivoPlus.Logic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,5 +22,6 @@ app.UseRouting();
 app.MapRazorPages();
 app.MapControllers(); // Habilita Web API
 
+ExtraLogic.CheckUsersTokens();
 app.Run();
 

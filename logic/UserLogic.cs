@@ -1,9 +1,9 @@
 using AtivoPlus.Models;
 using AtivoPlus.Data;
+using System.Collections.Concurrent;
 
 namespace AtivoPlus.Logic
 {
-
     class LoginToken
     {
         public string token;
@@ -12,35 +12,61 @@ namespace AtivoPlus.Logic
 
     class UserLogic
     {
-        private static Dictionary<string, string> userData = new Dictionary<string, string>();
+        private static ConcurrentDictionary<string, LoginToken> userData = new ConcurrentDictionary<string, LoginToken>();
 
-        //if aready exists substituir 
-        private static string addUserData(string username)
+        //if already exists substituir 
+        private static string AddUserData(string username)
         {
             string token = Guid.NewGuid().ToString();
-            userData[username] = token;
+
+            userData[username] = new LoginToken
+            {
+                token = token,
+                lastLogin = DateTime.UtcNow
+            };
             return token;
         }
 
-        private static void removeUserData(string username)
+        private static void RemoveUserData(string username)
         {
-            userData.Remove(username);
+            userData.TryRemove(username, out _);
+        }
+
+        public static void RemoveOutdatedLogins()
+        {
+            foreach (var usr in userData.Keys.ToList())
+            {
+                if (userData.TryGetValue(usr, out var lt) &&
+                    DateTime.UtcNow - lt.lastLogin > TimeSpan.FromDays(7))
+                {
+                    RemoveUserData(usr);
+                }
+            }
+        }
+
+        public static void UpdateLoginDate(string username)
+        {
+            if (userData.TryGetValue(username, out var lt))
+            {
+                lt.lastLogin = DateTime.UtcNow;
+                userData[username] = lt;
+            }
         }
 
         public static bool CheckUserLogged(string username, string token)
         {
-            return userData.TryGetValue(username, out var storedToken) && storedToken == token;
+            if (userData.TryGetValue(username, out var storedToken) && storedToken.token == token)
+            {
+                UpdateLoginDate(username);
+                return true;
+            }
+            return false;
         }
-
 
         private static async Task<bool> CheckIfUserExists(AppDbContext db, string Username)
         {
             List<User> users = await db.GetUserByUsername(Username);
-            if (users.Count != 0)
-            {
-                return false;
-            }
-            return true;
+            return users.Count != 0;
         }
 
         public static async Task<bool> AddUser(AppDbContext db, string Username, string Password)
@@ -60,18 +86,20 @@ namespace AtivoPlus.Logic
             };
 
             db.Users.Add(novoUser);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
 
             return true;
         }
 
-
         public static async Task<bool> CheckPassword(AppDbContext db, string Username, string Password)
         {
             List<User> users = await db.GetUserByUsername(Username);
+            if (users == null)
+            {
+                return false;
+            }
 
             var user = users.FirstOrDefault(user => user.Username.Equals(Username));
-
             return user != null && BCrypt.Net.BCrypt.Verify(Password, user.Hash);
         }
 
@@ -83,9 +111,7 @@ namespace AtivoPlus.Logic
                 return string.Empty;
             }
 
-            return addUserData(Username);
+            return AddUserData(Username);
         }
-
-
     }
 }
