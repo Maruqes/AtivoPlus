@@ -3,24 +3,33 @@ using AtivoPlus.Data;
 
 namespace AtivoPlus.Logic
 {
+
+    class LoginToken
+    {
+        public string token;
+        public DateTime lastLogin;
+    }
+
     class UserLogic
     {
-        private static Dictionary < string, string > userData = new Dictionary < string, string > ();
+        private static Dictionary<string, string> userData = new Dictionary<string, string>();
 
-        private static string addUserData(string Username){
+        //if aready exists substituir 
+        private static string addUserData(string username)
+        {
             string token = Guid.NewGuid().ToString();
-            userData.Add(Username, token);
+            userData[username] = token;
             return token;
         }
 
-        private static void removeUserData(string Username){
-            userData.Remove(Username);
+        private static void removeUserData(string username)
+        {
+            userData.Remove(username);
         }
 
-        public static bool CheckUserLogged(string Username, string token){
-            string tokenGet = userData[Username];
-            
-            return token == tokenGet;
+        public static bool CheckUserLogged(string username, string token)
+        {
+            return userData.TryGetValue(username, out var storedToken) && storedToken == token;
         }
 
 
@@ -59,9 +68,6 @@ namespace AtivoPlus.Logic
 
         public static async Task<bool> CheckPassword(AppDbContext db, string Username, string Password)
         {
-            //ir buscar a hash do user
-            //compar a nossa pass
-
             List<User> users = await db.GetUserByUsername(Username);
 
             var user = users.FirstOrDefault(user => user.Username.Equals(Username));
@@ -70,16 +76,14 @@ namespace AtivoPlus.Logic
         }
 
         //Returns user Token else returns empty string
-        public static async Task<string> LogarUser(AppDbContext db, string Username, string Password){
-            // confirmar se user psw existe,
-            // se existir adicionar um mapa a combinacao do user e token gerada
-            // map string string  usernsme - token
-            
-            if(await CheckPassword(db, Username, Password)){
-                return addUserData(Username);
+        public static async Task<string> LogarUser(AppDbContext db, string Username, string Password)
+        {
+            if (await CheckPassword(db, Username, Password) == false)
+            {
+                return string.Empty;
             }
 
-            return string.Empty;
+            return addUserData(Username);
         }
 
 

@@ -31,19 +31,20 @@ namespace AtivoPlus.Controllers
         [HttpGet("secret")]
         public IActionResult ServeFile2()
         {
-            var cookieUsername =  Request.Cookies["username"];
-            if(cookieUsername == null)
+            string cookieUsername = ExtraLogic.GetCookie(Request, "username");
+            if (cookieUsername == null)
             {
                 return BadRequest();
             }
 
-            var cookieToken =  Request.Cookies["token"];
-            if(cookieToken == null)
+            var cookieToken = ExtraLogic.GetCookie(Request, "token");
+            if (cookieToken == null)
             {
                 return BadRequest();
             }
 
-            if(!UserLogic.CheckUserLogged(cookieUsername, cookieToken)){
+            if (!UserLogic.CheckUserLogged(cookieUsername, cookieToken))
+            {
                 return BadRequest();
             }
 

@@ -12,7 +12,14 @@ namespace AtivoPlus.Data
 
         public async Task<List<User>> GetUsersByRawSqlAsync()
         {
-            return await Users.FromSqlRaw("SELECT Id, Username FROM Users").ToListAsync();
+            return await Users.FromSqlRaw("SELECT \"Id\", \"Username\" FROM \"Users\"").Select(u => new User
+            {
+                Id = u.Id,
+                Username = u.Username,
+                Hash = "",
+                DataCriacao = DateTime.MinValue
+            })
+            .ToListAsync();
         }
 
 
