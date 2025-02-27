@@ -6,7 +6,7 @@ namespace AtivoPlus.Logic
 {
     class LoginToken
     {
-        public string token;
+        public string token = string.Empty;
         public DateTime lastLogin;
     }
 
