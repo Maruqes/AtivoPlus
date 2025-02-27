@@ -16,11 +16,11 @@ namespace AtivoPlus.Logic
             return true;
         }
 
-        public static async void AddUser(AppDbContext db, string Username, string Password)
+        public static async Task<bool> AddUser(AppDbContext db, string Username, string Password)
         {
             if (await CheckIfUserExists(db, Username))
             {
-                return;
+                return false;
             }
 
             string hash = BCrypt.Net.BCrypt.HashPassword(Password);
@@ -34,6 +34,8 @@ namespace AtivoPlus.Logic
 
             db.Users.Add(novoUser);
             db.SaveChanges();
+
+            return true;
         }
 
 

@@ -29,7 +29,9 @@ namespace AtivoPlus.Controllers
         [HttpPost("adicionar")]
         public async Task<ActionResult<User>> AdicionarUser([FromBody] UserRequest request)
         {
-            UserLogic.AddUser(db, request.Username, request.Password);
+            if(await UserLogic.AddUser(db, request.Username, request.Password) == false){
+                return BadRequest();
+            }
 
             return Ok();
         }
