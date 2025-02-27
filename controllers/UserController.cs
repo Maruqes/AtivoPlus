@@ -40,5 +40,22 @@ namespace AtivoPlus.Controllers
         {
             return await db.GetUsersByRawSqlAsync();
         }
+
+        [HttpPost("logar")]
+        public async Task<ActionResult<User>> LogarUser([FromBody] UserRequest request)
+        {
+            string userToken = await UserLogic.LogarUser(db, request.Username, request.Password);
+
+            if(userToken == string.Empty){
+                return BadRequest();
+            }
+
+            CookieOptions cookie = new CookieOptions();
+            cookie.Expires = System.DateTime.Now.AddDays(7);
+            cookie.HttpOnly = true;
+            Response.Cookies.Append("token", userToken, cookie);
+            Response.Cookies.Append("username", request.Username, cookie);
+            return Ok();
+        }
     }
 }
