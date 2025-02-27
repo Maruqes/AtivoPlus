@@ -49,6 +49,7 @@ namespace AtivoPlus.Controllers
             if(userToken == string.Empty){
                 return BadRequest();
             }
+            
 
             CookieOptions cookie = new CookieOptions();
             cookie.Expires = System.DateTime.Now.AddDays(7);
