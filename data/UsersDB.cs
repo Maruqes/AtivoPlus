@@ -18,7 +18,7 @@ namespace AtivoPlus.Data
 
         public async Task<List<User>> GetUserByUsername(string Username)
         {
-            return await Users.FromSqlInterpolated($"SELECT * FROM Users WHERE Username = {Username}").ToListAsync();
+            return await Users.FromSqlInterpolated($"SELECT * FROM \"Users\" WHERE \"Username\" = {Username}").ToListAsync();
         }
     }
 }

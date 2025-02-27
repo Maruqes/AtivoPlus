@@ -34,6 +34,29 @@
                 console.error('Error:', error);
             });
     }
+
+    function logarUser() {
+        console.log('logar user');
+        console.log('${window.location.origin}/api/user/logar');
+        fetch(`${window.location.origin}/api/user/logar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                Username: 'John Doe',
+                Password: '123',
+            }),
+        })
+            .then(response => response.text())
+            .then(text => {
+                const data = text ? JSON.parse(text) : {};
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
 </script>
 
 <h1>ola</h1>
@@ -41,3 +64,4 @@
 <button onclick="getUser()">get user</button>
 <button onclick="addProduct()">add product</button>
 <button onclick="getProduct()">get product</button>
+<button onclick="logarUser()">Logar User</button>

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AtivoPlus.Data;
 using AtivoPlus.Models;
+using AtivoPlus.Logic;
 
 //ou app a usar api ou da par por razor em cima desta merda
 
@@ -24,6 +25,29 @@ namespace AtivoPlus.Controllers
         public IActionResult ServeFile()
         {
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "test/index.html");
+            return PhysicalFile(filePath, "text/html");
+        }
+
+        [HttpGet("secret")]
+        public IActionResult ServeFile2()
+        {
+            var cookieUsername =  Request.Cookies["username"];
+            if(cookieUsername == null)
+            {
+                return BadRequest();
+            }
+
+            var cookieToken =  Request.Cookies["token"];
+            if(cookieToken == null)
+            {
+                return BadRequest();
+            }
+
+            if(!UserLogic.CheckUserLogged(cookieUsername, cookieToken)){
+                return BadRequest();
+            }
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "test/index2.html");
             return PhysicalFile(filePath, "text/html");
         }
 
