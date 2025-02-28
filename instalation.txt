@@ -30,3 +30,8 @@ dotnet-ef database update
 
             /api/user/adionar/user
         */
+
+
+
+        //todo ->  all classes from db 
+        //permission logic
