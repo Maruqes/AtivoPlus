@@ -42,17 +42,22 @@ namespace AtivoPlus.Controllers
         }
 
         [HttpGet("secret2")]
-        public async Task<IActionResult> ServeFile3()
+        public async Task<IActionResult> ServeFile3([FromQuery] string permission)
         {
             string Username = await UserLogic.CheckUserLoggedRequest(Request);
             if (Username == string.Empty)
             {
-                return Unauthorized();
+            return Unauthorized();
             }
 
-            if (await PermissionLogic.CheckPermission(db, Username, new[] { "firstPerm" }) == false)
+            if (string.IsNullOrEmpty(permission))
             {
-                return Unauthorized();
+            return BadRequest("Permission parameter is missing.");
+            }
+
+            if (await PermissionLogic.CheckPermission(db, Username, new[] { permission }) == false)
+            {
+            return Unauthorized();
             }
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "test/index2.html");
