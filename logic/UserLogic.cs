@@ -118,7 +118,7 @@ namespace AtivoPlus.Logic
         }
 
         //return username if logged in else return empty string
-        public static async Task<string> CheckUserLoggedRequest(HttpRequest Request)
+        public static string CheckUserLoggedRequest(HttpRequest Request)
         {
             string cookieUsername = ExtraLogic.GetCookie(Request, "username");
             if (cookieUsername == null)
