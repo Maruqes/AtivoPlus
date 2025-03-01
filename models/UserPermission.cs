@@ -6,6 +6,7 @@ namespace AtivoPlus.Models
 {
     public class UserPermission
     {
+        [Key]
         public int Id { get; set; }
 
         [ForeignKey("User")]
