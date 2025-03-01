@@ -13,6 +13,8 @@ namespace AtivoPlus.Data
         {
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<UserInfo>().ToTable("UsersInfo");
+            modelBuilder.Entity<Permission>().ToTable("Permissions");
+            modelBuilder.Entity<UserPermission>().ToTable("UserPermissions");
         }
     }
 }

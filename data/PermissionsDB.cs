@@ -7,6 +7,10 @@ namespace AtivoPlus.Data
 {
     public partial class AppDbContext : DbContext
     {
-        public DbSet<UserInfo> UsersInfo { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<UserPermission> UserPermission { get; set; }
+
+
+
     }
 }

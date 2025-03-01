@@ -1,6 +1,9 @@
 using AtivoPlus.Models;
 using AtivoPlus.Data;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using System.Linq;
+using System;
 
 namespace AtivoPlus.Logic
 {
@@ -82,7 +85,7 @@ namespace AtivoPlus.Logic
             {
                 Username = Username,
                 Hash = hash,
-                DataCriacao = DateTime.UtcNow
+                DataCriacao = DateTime.UtcNow // Use DateTime.UtcNow instead of DateTime.Now
             };
 
             db.Users.Add(novoUser);
