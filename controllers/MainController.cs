@@ -12,11 +12,11 @@ namespace AtivoPlus.Controllers
     [ApiController] // Indica que este é um Controller de API
     public class MainController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext db;
 
         public MainController(AppDbContext context)
         {
-            _context = context;
+            db = context;
         }
 
 
@@ -29,23 +29,30 @@ namespace AtivoPlus.Controllers
         }
 
         [HttpGet("secret")]
-        public IActionResult ServeFile2()
+        public async Task<IActionResult> ServeFile2()
         {
-            string cookieUsername = ExtraLogic.GetCookie(Request, "username");
-            if (cookieUsername == null)
+            string Username = await UserLogic.CheckUserLoggedRequest(Request);
+            if (Username == string.Empty)
             {
-                return BadRequest();
+                return Unauthorized();
             }
 
-            var cookieToken = ExtraLogic.GetCookie(Request, "token");
-            if (cookieToken == null)
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "test/index2.html");
+            return PhysicalFile(filePath, "text/html");
+        }
+
+        [HttpGet("secret2")]
+        public async Task<IActionResult> ServeFile3()
+        {
+            string Username = await UserLogic.CheckUserLoggedRequest(Request);
+            if (Username == string.Empty)
             {
-                return BadRequest();
+                return Unauthorized();
             }
 
-            if (!UserLogic.CheckUserLogged(cookieUsername, cookieToken))
+            if (await PermissionLogic.CheckPermission(db, Username, new[] { "firstPerm" }) == false)
             {
-                return BadRequest();
+                return Unauthorized();
             }
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "test/index2.html");

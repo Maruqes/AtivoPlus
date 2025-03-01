@@ -1,7 +1,7 @@
 <script>
     function addUser() {
         console.log('add user');
-        console.log('${window.location.origin}/api/user/adicionar');
+        console.log(`${window.location.origin}/api/user/adicionar`);
         fetch(`${window.location.origin}/api/user/adicionar`, {
             method: 'POST',
             headers: {
@@ -37,15 +37,19 @@
 
     function logarUser() {
         console.log('logar user');
-        console.log('${window.location.origin}/api/user/logar');
+        
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        console.log(`${window.location.origin}/api/user/logar`);
+
         fetch(`${window.location.origin}/api/user/logar`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                Username: 'John Doe',
-                Password: '123',
+                Username: username,
+                Password: password,
             }),
         })
             .then(response => response.text())
@@ -59,9 +63,19 @@
     }
 </script>
 
-<h1>ola</h1>
-<button onclick="addUser()">add user</button>
-<button onclick="getUser()">get user</button>
-<button onclick="addProduct()">add product</button>
-<button onclick="getProduct()">get product</button>
+<h1>Login</h1>
+<div>
+    <label for="loginUsername">Username:</label>
+    <input id="loginUsername" type="text" placeholder="Enter username">
+</div>
+<div>
+    <label for="loginPassword">Password:</label>
+    <input id="loginPassword" type="password" placeholder="Enter password">
+</div>
 <button onclick="logarUser()">Logar User</button>
+
+<h1>Other Operations</h1>
+<button onclick="addUser()">Add User</button>
+<button onclick="getUser()">Get User</button>
+<button onclick="addProduct()">Add Product</button>
+<button onclick="getProduct()">Get Product</button>

@@ -27,5 +27,12 @@ namespace AtivoPlus.Data
         {
             return await Users.FromSqlInterpolated($"SELECT * FROM \"Users\" WHERE \"Username\" = {Username}").ToListAsync();
         }
+
+        public async Task<bool> DoesExistUser(string Username)
+        {
+            return await Users
+                .FromSqlInterpolated($"SELECT * FROM \"Users\" WHERE \"Username\" = {Username}")
+                .AnyAsync();
+        }
     }
 }

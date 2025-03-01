@@ -116,5 +116,43 @@ namespace AtivoPlus.Logic
 
             return AddUserData(Username);
         }
+
+        //return username if logged in else return empty string
+        public static async Task<string> CheckUserLoggedRequest(HttpRequest Request)
+        {
+            string cookieUsername = ExtraLogic.GetCookie(Request, "username");
+            if (cookieUsername == null)
+            {
+                return string.Empty;
+            }
+
+            var cookieToken = ExtraLogic.GetCookie(Request, "token");
+            if (cookieToken == null)
+            {
+                return string.Empty;
+            }
+
+            if (!UserLogic.CheckUserLogged(cookieUsername, cookieToken))
+            {
+                return string.Empty;
+            }
+            return cookieUsername;
+        }
+
+        public static async Task<int> GetUserID(AppDbContext db, string Username)
+        {
+            List<User> users = await db.GetUserByUsername(Username);
+            if (users == null)
+            {
+                return -1;
+            }
+
+            var user = users.FirstOrDefault(user => user.Username.Equals(Username));
+            if(user == null)
+            {
+                return -1;
+            }
+            return user.Id;
+        }
     }
 }
