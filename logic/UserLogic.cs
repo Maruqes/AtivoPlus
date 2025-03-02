@@ -132,7 +132,7 @@ namespace AtivoPlus.Logic
                 return string.Empty;
             }
 
-            if (!UserLogic.CheckUserLogged(cookieUsername, cookieToken))
+            if (!CheckUserLogged(cookieUsername, cookieToken))
             {
                 return string.Empty;
             }

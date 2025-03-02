@@ -38,11 +38,11 @@ namespace AtivoPlus.Controllers
         }
 
 
-        [HttpGet("getTodos")]
-        public async Task<ActionResult<List<User>>> GetTodos()
-        {
-            return await db.GetUsersByRawSqlAsync();
-        }
+        // [HttpGet("getTodos")]
+        // public async Task<ActionResult<List<User>>> GetTodos()
+        // {
+        //     return await db.GetUsersByRawSqlAsync();
+        // }
 
         [HttpPost("logar")]
         public async Task<ActionResult<User>> LogarUser([FromBody] UserRequest request)

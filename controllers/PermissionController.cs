@@ -40,7 +40,7 @@ namespace AtivoPlus.Controllers
             {
                 return BadRequest();
             }
-            string Username = await UserLogic.CheckUserLoggedRequest(Request);
+            string Username = UserLogic.CheckUserLoggedRequest(Request);
             if (Username == string.Empty)
             {
                 return Unauthorized();
@@ -66,7 +66,7 @@ namespace AtivoPlus.Controllers
         [HttpPost("deletePermission")]
         public async Task<ActionResult<User>> DeletePermission([FromBody] PermsCreation permissionRequest)
         {
-            string Username = await UserLogic.CheckUserLoggedRequest(Request);
+            string Username =  UserLogic.CheckUserLoggedRequest(Request);
             if (Username == string.Empty)
             {
                 return Unauthorized();
@@ -93,7 +93,7 @@ namespace AtivoPlus.Controllers
         [HttpPost("addUserPermission")]
         public async Task<ActionResult<User>> AddUserPermission([FromBody] PermsUser userPermission)
         {
-            string Username = await UserLogic.CheckUserLoggedRequest(Request);
+            string Username =  UserLogic.CheckUserLoggedRequest(Request);
             if (Username == string.Empty)
             {
                 return Unauthorized();
@@ -135,7 +135,7 @@ namespace AtivoPlus.Controllers
         [HttpPost("deleteUserPermission")]
         public async Task<ActionResult<User>> DeleteUserPermission([FromBody] PermsUser userPermission)
         {
-            string Username = await UserLogic.CheckUserLoggedRequest(Request);
+            string Username = UserLogic.CheckUserLoggedRequest(Request);
             if (Username == string.Empty)
             {
                 return Unauthorized();
