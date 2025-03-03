@@ -57,7 +57,7 @@ namespace AtivoPlus.Tests
             Assert.True(string.IsNullOrEmpty(badToken));
 
             Assert.True(TestLoggedIn("testUser2", token));
-            Assert.True(!TestLoggedIn("testUser2", badToken));
+            Assert.False(TestLoggedIn("testUser2", badToken));
 
         }
     }

@@ -117,6 +117,11 @@ namespace AtivoPlus.Logic
             return AddUserData(Username);
         }
 
+        public static void LogoutUser(string Username)
+        {
+            RemoveUserData(Username);
+        }
+
         //return username if logged in else return empty string
         public static string CheckUserLoggedRequest(HttpRequest Request)
         {
@@ -148,7 +153,7 @@ namespace AtivoPlus.Logic
             }
 
             var user = users.FirstOrDefault(user => user.Username.Equals(Username));
-            if(user == null)
+            if (user == null)
             {
                 return -1;
             }

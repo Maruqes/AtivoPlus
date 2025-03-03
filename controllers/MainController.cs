@@ -29,7 +29,7 @@ namespace AtivoPlus.Controllers
         }
 
         [HttpGet("secret")]
-        public async Task<IActionResult> ServeFile2()
+        public IActionResult ServeFile2()
         {
             string Username = UserLogic.CheckUserLoggedRequest(Request);
             if (Username == string.Empty)

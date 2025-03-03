@@ -59,5 +59,22 @@ namespace AtivoPlus.Controllers
 
             return Ok();
         }
+
+        [HttpGet("logout")]
+        public ActionResult<User> LogoutUser()
+        {
+            string Username = UserLogic.CheckUserLoggedRequest(Request);
+            if (Username == string.Empty)
+            {
+                return Unauthorized();
+            }
+
+            UserLogic.LogoutUser(Username);
+
+            ExtraLogic.SetCookie(Response, "username", string.Empty);
+            ExtraLogic.SetCookie(Response, "token", string.Empty);
+
+            return Ok();
+        }
     }
 }

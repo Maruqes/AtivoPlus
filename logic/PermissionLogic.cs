@@ -6,6 +6,7 @@ namespace AtivoPlus.Logic
 {
     class PermissionLogic
     {
+
         // -1 is the admin
         public static async Task<int> GetPermissionID(AppDbContext db, string name)
         {
