@@ -51,12 +51,12 @@ namespace AtivoPlus.Controllers
                 return Unauthorized();
             }
 
-            if (await db.DoesExistPermission(permissionRequest.Name) == true)
+            if (await PermissionLogic.DoesExistPermission(db, permissionRequest.Name) == true)
             {
                 return BadRequest();
             }
 
-            if (await db.AddPermission(permissionRequest.Name) == false)
+            if (await PermissionLogic.AddPermission(db, permissionRequest.Name) == false)
             {
                 return BadRequest();
             }
@@ -66,7 +66,7 @@ namespace AtivoPlus.Controllers
         [HttpPost("deletePermission")]
         public async Task<ActionResult<User>> DeletePermission([FromBody] PermsCreation permissionRequest)
         {
-            string Username =  UserLogic.CheckUserLoggedRequest(Request);
+            string Username = UserLogic.CheckUserLoggedRequest(Request);
             if (Username == string.Empty)
             {
                 return Unauthorized();
@@ -77,7 +77,7 @@ namespace AtivoPlus.Controllers
                 return Unauthorized();
             }
 
-            if (await db.DeletePermission(permissionRequest.Name) == false)
+            if (await PermissionLogic.DeletePermission(db, permissionRequest.Name) == false)
             {
                 return BadRequest();
             }
@@ -93,7 +93,7 @@ namespace AtivoPlus.Controllers
         [HttpPost("addUserPermission")]
         public async Task<ActionResult<User>> AddUserPermission([FromBody] PermsUser userPermission)
         {
-            string Username =  UserLogic.CheckUserLoggedRequest(Request);
+            string Username = UserLogic.CheckUserLoggedRequest(Request);
             if (Username == string.Empty)
             {
                 return Unauthorized();
@@ -110,21 +110,7 @@ namespace AtivoPlus.Controllers
                 return BadRequest();
             }
 
-            int userID = await UserLogic.GetUserID(db, userPermission.Username);
-            if (userID == -1)
-            {
-                Console.WriteLine("User does not exist");
-                return BadRequest();
-            }
-
-            int permID = await PermissionLogic.GetPermissionID(db, userPermission.PermissionName);
-            if (permID == -2)
-            {
-                Console.WriteLine("Permission does not exist");
-                return BadRequest();
-            }
-
-            if (await db.AddUserPermission(userID, permID) == false)
+            if (await PermissionLogic.AddUserPermission(db, userPermission.Username, userPermission.PermissionName) == false)
             {
                 Console.WriteLine("Could not add permission");
                 return BadRequest();
@@ -145,19 +131,7 @@ namespace AtivoPlus.Controllers
                 return Unauthorized();
             }
 
-            int userID = await UserLogic.GetUserID(db, userPermission.Username);
-            if (userID == -1)
-            {
-                return BadRequest();
-            }
-
-            int permID = await PermissionLogic.GetPermissionID(db, userPermission.PermissionName);
-            if (permID == -1)
-            {
-                return BadRequest();
-            }
-
-            if (await db.DeleteUserPermission(userID, permID) == false)
+            if (await PermissionLogic.DeleteUserPermission(db, userPermission.Username, userPermission.PermissionName) == false)
             {
                 return BadRequest();
             }

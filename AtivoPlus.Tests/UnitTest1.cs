@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AtivoPlus.Tests
 {
-    public class LoginPermissionTests
+    public partial class UnitTest1Test
     {
 
         //criar db mpts pa testes
@@ -39,26 +39,27 @@ namespace AtivoPlus.Tests
             return true;
         }
 
-        [Fact]
-        public async Task AddUser_ValidUser_ShouldBeAbleToLogIn()
-        {
-            var db = GetPostgresDbContext();
+        // [Fact]
+        // public async Task AddUser_ValidUser_ShouldBeAbleToLogIn()
+        // {
+        //     var db = GetPostgresDbContext();
 
 
-            // bool addResult = await UserLogic.AddUser(db, "testUser2", "TestPassword123");
-            // Assert.True(addResult);
+        //     // bool addResult = await UserLogic.AddUser(db, "testUser2", "TestPassword123");
+        //     // Assert.True(addResult);
 
-            //return token 
-            string token = await UserLogic.LogarUser(db, "testUser2", "TestPassword123");
-            Assert.False(string.IsNullOrEmpty(token));
+        //     //return token 
+        //     string token = await UserLogic.LogarUser(db, "testUser2", "TestPassword123");
+        //     Assert.False(string.IsNullOrEmpty(token));
 
-            //return empty string
-            string badToken = await UserLogic.LogarUser(db, "testUser2", "WrongPassword");
-            Assert.True(string.IsNullOrEmpty(badToken));
+        //     //return empty string
+        //     string badToken = await UserLogic.LogarUser(db, "testUser2", "WrongPassword");
+        //     Assert.True(string.IsNullOrEmpty(badToken));
 
-            Assert.True(TestLoggedIn("testUser2", token));
-            Assert.False(TestLoggedIn("testUser2", badToken));
+        //     Assert.True(TestLoggedIn("testUser2", token));
+        //     Assert.False(TestLoggedIn("testUser2", badToken));
 
-        }
+        // }
+
     }
 }

@@ -39,10 +39,17 @@ namespace AtivoPlus.Data
             await SaveChangesAsync();
             return true;
         }
-
         public async Task<bool> DeletePermission(string name)
         {
-            await Database.ExecuteSqlInterpolatedAsync($"DELETE FROM \"Permissions\" WHERE \"Name\" = {name}");
+            List<Permission> permissions = await GetPermissionsByName(name);
+            if (permissions.Count == 0)
+                return false;
+
+            int permissionId = permissions[0].Id;
+
+            await Database.ExecuteSqlInterpolatedAsync($"DELETE FROM \"UserPermissions\" WHERE \"PermissionId\" = {permissionId}");
+
+            await Database.ExecuteSqlInterpolatedAsync($"DELETE FROM \"Permissions\" WHERE \"Id\" = {permissionId}");
             return true;
         }
 

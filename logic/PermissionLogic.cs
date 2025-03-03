@@ -50,8 +50,17 @@ namespace AtivoPlus.Logic
             return true;
         }
 
+        public static async Task<bool> DoesExistPermission(AppDbContext db, string name)
+        {
+            return await db.DoesExistPermission(name);
+        }
+
         public static async Task<bool> AddPermission(AppDbContext db, string name)
         {
+            if (await db.DoesExistPermission(name) == true)
+            {
+                return false;
+            }
             Permission permission = new Permission();
             permission.Name = name;
             db.Permissions.Add(permission);
@@ -59,6 +68,61 @@ namespace AtivoPlus.Logic
             return true;
         }
 
+        public static async Task<bool> DeletePermission(AppDbContext db, string name)
+        {
+            if (await db.DoesExistPermission(name) == false)
+            {
+                return false;
+            }
+            await db.DeletePermission(name);
+            return true;
+        }
 
+
+        public static async Task<bool> AddUserPermission(AppDbContext db, string username, string permissionName)
+        {
+            int userID = await UserLogic.GetUserID(db, username);
+            if (userID == -1)
+            {
+                Console.WriteLine("User does not exist");
+                return false;
+            }
+
+            int permID = await PermissionLogic.GetPermissionID(db, permissionName);
+            if (permID == -2)
+            {
+                Console.WriteLine("Permission does not exist");
+                return false;
+            }
+
+            if (await db.AddUserPermission(userID, permID) == false)
+            {
+                Console.WriteLine("Could not add permission");
+                return false;
+            }
+            return true;
+        }
+
+        public static async Task<bool> DeleteUserPermission(AppDbContext db, string username, string permissionName)
+        {
+            int userID = await UserLogic.GetUserID(db, username);
+            if (userID == -1)
+            {
+                return false;
+            }
+
+            int permID = await PermissionLogic.GetPermissionID(db, permissionName);
+            if (permID == -1)
+            {
+                return false;
+            }
+
+
+            if (await db.DeleteUserPermission(userID, permID) == false)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
