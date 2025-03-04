@@ -4,8 +4,6 @@ using AtivoPlus.Data;
 using AtivoPlus.Models;
 using AtivoPlus.Logic;
 
-//ou app a usar api ou da par por razor em cima desta merda
-
 namespace AtivoPlus.Controllers
 {
     [Route("api/user")] // A API está definida em "api/user"

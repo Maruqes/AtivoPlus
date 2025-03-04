@@ -81,11 +81,11 @@ namespace AtivoPlus.Logic
 
             string hash = BCrypt.Net.BCrypt.HashPassword(Password);
 
-            User novoUser = new User
+            User novoUser = new()
             {
                 Username = Username,
                 Hash = hash,
-                DataCriacao = DateTime.UtcNow // Use DateTime.UtcNow instead of DateTime.Now
+                DataCriacao = DateTime.UtcNow
             };
 
             db.Users.Add(novoUser);

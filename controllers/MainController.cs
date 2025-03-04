@@ -8,8 +8,8 @@ using AtivoPlus.Logic;
 
 namespace AtivoPlus.Controllers
 {
-    [Route("/")] // A API está definida em "api/produto"
-    [ApiController] // Indica que este é um Controller de API
+    [Route("/")]
+    [ApiController]
     public class MainController : ControllerBase
     {
         private readonly AppDbContext db;
