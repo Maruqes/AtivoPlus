@@ -25,24 +25,7 @@ AppDbContext getDb()
     return db;
 }
 
-//create admin permission if it does not exist
-void setUpAdminPermission()
-{
-    var db = getDb();
 
-    // Verifica se a permissão 'admin' já existe
-    if (!db.Permissions.Any(p => p.Id == -1))
-    {
-        var adminPermission = new Permission
-        {
-            Id = -1,
-            Name = "admin"
-        };
-
-        db.Permissions.Add(adminPermission);
-        db.SaveChanges();
-    }
-}
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,7 +38,7 @@ builder.Services.AddControllers(); // Adiciona suporte para Web API
 
 var app = builder.Build();
 
-setUpAdminPermission();
+ExtraLogic.SetUpAdminPermission(getDb());
 if (args.Length > 0 && args[0] == "--addadmin")
 {
     if (args.Length < 2)

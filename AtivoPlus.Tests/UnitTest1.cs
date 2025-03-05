@@ -2,29 +2,42 @@
 using AtivoPlus.Data;
 using AtivoPlus.Logic;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
+using AtivoPlus.Models;
 
 namespace AtivoPlus.Tests
 {
-    public partial class UnitTest1Test
+    [CollectionDefinition("Database Tests", DisableParallelization = true)]
+    public partial class UnitTests
     {
-
         //criar db mpts pa testes
-        private AppDbContext GetPostgresDbContext()
+        private static AppDbContext GetPostgresDbContext()
         {
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            string connectionString = configuration.GetConnectionString("PostgreSqlConnection") ?? throw new InvalidOperationException("Connection string 'PostgreSqlConnection' not found.");
+                    .SetBasePath(AppContext.BaseDirectory)
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+            string connectionString = configuration.GetConnectionString("PostgreSqlConnectionUniTest") ?? throw new InvalidOperationException("Connection string 'PostgreSqlConnection' not found.");
 
             var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseNpgsql(connectionString)
-                .Options;
+            .UseNpgsql(connectionString)
+            .Options;
 
             var db = new AppDbContext(options);
             db.Database.EnsureCreated();
+
+            // limpa as tabelas para os testes
+            var entityTypes = db.Model.GetEntityTypes();
+            foreach (var entityType in entityTypes)
+            {
+                var tableName = entityType.GetTableName();
+                if (!string.IsNullOrEmpty(tableName))
+                {
+                    db.Database.ExecuteSqlRaw($"DELETE FROM \"{tableName}\";"); //nao mudar por algum motivo com ExecuteSql nao funfa
+                }
+            }
+
+            db.SaveChanges();
+            ExtraLogic.SetUpAdminPermission(db);
             return db;
         }
 
@@ -39,27 +52,27 @@ namespace AtivoPlus.Tests
             return true;
         }
 
-        // [Fact]
-        // public async Task AddUser_ValidUser_ShouldBeAbleToLogIn()
-        // {
-        //     var db = GetPostgresDbContext();
+        [Fact]
+        public async Task AddUser_ValidUser_ShouldBeAbleToLogIn()
+        {
+            var db = GetPostgresDbContext();
 
 
-        //     // bool addResult = await UserLogic.AddUser(db, "testUser2", "TestPassword123");
-        //     // Assert.True(addResult);
+            bool addResult = await UserLogic.AddUser(db, "testUser2", "TestPassword123");
+            Assert.True(addResult);
 
-        //     //return token 
-        //     string token = await UserLogic.LogarUser(db, "testUser2", "TestPassword123");
-        //     Assert.False(string.IsNullOrEmpty(token));
+            //return token 
+            string token = await UserLogic.LogarUser(db, "testUser2", "TestPassword123");
+            Assert.False(string.IsNullOrEmpty(token));
 
-        //     //return empty string
-        //     string badToken = await UserLogic.LogarUser(db, "testUser2", "WrongPassword");
-        //     Assert.True(string.IsNullOrEmpty(badToken));
+            //return empty string
+            string badToken = await UserLogic.LogarUser(db, "testUser2", "WrongPassword");
+            Assert.True(string.IsNullOrEmpty(badToken));
 
-        //     Assert.True(TestLoggedIn("testUser2", token));
-        //     Assert.False(TestLoggedIn("testUser2", badToken));
+            Assert.True(TestLoggedIn("testUser2", token));
+            Assert.False(TestLoggedIn("testUser2", badToken));
 
-        // }
+        }
 
     }
 }

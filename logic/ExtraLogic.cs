@@ -6,6 +6,23 @@ namespace AtivoPlus.Logic
 {
     class ExtraLogic
     {
+        //create admin permission if it does not exist
+        public static void SetUpAdminPermission(AppDbContext db)
+        {
+            // Verifica se a permissão 'admin' já existe
+            if (!db.Permissions.Any(p => p.Id == -1))
+            {
+                var adminPermission = new Permission
+                {
+                    Id = -1,
+                    Name = "admin"
+                };
+
+                db.Permissions.Add(adminPermission);
+                db.SaveChanges();
+            }
+        }
+
         public static string GetCookie(HttpRequest Request, string key)
         {
             var ret = Request.Cookies[key];
