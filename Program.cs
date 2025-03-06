@@ -36,7 +36,19 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddRazorPages();
 builder.Services.AddControllers(); // Adiciona suporte para Web API
 
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
+
+Console.WriteLine($"Environment: {app.Environment.EnvironmentName}"); // Para depuração
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 
 ExtraLogic.SetUpAdminPermission(getDb());
 if (args.Length > 0 && args[0] == "--addadmin")

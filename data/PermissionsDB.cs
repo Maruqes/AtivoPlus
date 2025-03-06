@@ -73,5 +73,12 @@ namespace AtivoPlus.Data
             await Database.ExecuteSqlInterpolatedAsync($"DELETE FROM \"UserPermissions\" WHERE \"UserId\" = {userId} AND \"PermissionId\" = {permissionId}");
             return true;
         }
+
+        public async Task<Permission> GetPermissionById(int permissionId)
+        {
+            return (await Permissions
+                .FromSqlInterpolated($"SELECT * FROM \"Permissions\" WHERE \"Id\" = {permissionId}")
+                .ToListAsync())[0];
+        }
     }
 }

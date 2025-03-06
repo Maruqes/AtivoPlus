@@ -117,21 +117,39 @@ namespace AtivoPlus.Logic
             return AddUserData(Username);
         }
 
-        public static void LogoutUser(string Username)
+        public static void LogoutUser(string Username, string token)
         {
+            if (!CheckUserLogged(Username, token))
+            {
+                return;
+            }
+
             RemoveUserData(Username);
         }
+
+        public static string GetUsernameWithRequest(HttpRequest request)
+        {
+            string cookieUsername = ExtraLogic.GetCookie(request, "username");
+            return cookieUsername ?? string.Empty;
+        }
+
+        public static string GetTokenWithRequest(HttpRequest request)
+        {
+            string cookieToken = ExtraLogic.GetCookie(request, "token");
+            return cookieToken ?? string.Empty;
+        }
+
 
         //return username if logged in else return empty string
         public static string CheckUserLoggedRequest(HttpRequest Request)
         {
-            string cookieUsername = ExtraLogic.GetCookie(Request, "username");
+            string cookieUsername = GetUsernameWithRequest(Request);
             if (cookieUsername == null)
             {
                 return string.Empty;
             }
 
-            var cookieToken = ExtraLogic.GetCookie(Request, "token");
+            var cookieToken = GetTokenWithRequest(Request);
             if (cookieToken == null)
             {
                 return string.Empty;

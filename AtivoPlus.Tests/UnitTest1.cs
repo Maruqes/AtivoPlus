@@ -42,15 +42,6 @@ namespace AtivoPlus.Tests
         }
 
 
-        public bool TestLoggedIn(string username, string token)
-        {
-            //somewhat the logic inside  UserLogic.CheckUserLoggedRequest(Request)
-            if (!UserLogic.CheckUserLogged(username, token))
-            {
-                return false;
-            }
-            return true;
-        }
 
         [Fact]
         public async Task AddUser_ValidUser_ShouldBeAbleToLogIn()
@@ -69,9 +60,12 @@ namespace AtivoPlus.Tests
             string badToken = await UserLogic.LogarUser(db, "testUser2", "WrongPassword");
             Assert.True(string.IsNullOrEmpty(badToken));
 
-            Assert.True(TestLoggedIn("testUser2", token));
-            Assert.False(TestLoggedIn("testUser2", badToken));
+            Assert.True(UserLogic.CheckUserLogged("testUser2", token));
+            Assert.False(UserLogic.CheckUserLogged("testUser2", badToken));
 
+            //logout and test old token
+            UserLogic.LogoutUser("testUser2", token);
+            Assert.False(UserLogic.CheckUserLogged("testUser2", token));
         }
 
     }

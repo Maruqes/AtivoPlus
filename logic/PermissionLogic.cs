@@ -124,5 +124,22 @@ namespace AtivoPlus.Logic
             }
             return true;
         }
+
+        public static async Task<List<Permission>> GetPermissionsByUsername(AppDbContext db, string username)
+        {
+            int userID = await UserLogic.GetUserID(db, username);
+            if (userID == -1)
+            {
+                return new List<Permission>();
+            }
+
+            List<UserPermission> userPerms = await db.GetPermissionsByUserId(userID);
+            List<Permission> permissions = new List<Permission>();
+            foreach (UserPermission userPerm in userPerms)
+            {
+                permissions.Add(await db.GetPermissionById(userPerm.PermissionId));
+            }
+            return permissions;
+        }
     }
 }

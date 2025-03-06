@@ -33,7 +33,7 @@ namespace AtivoPlus.Controllers
             public string Name { get; set; } = string.Empty;
         }
 
-        [HttpPost("createPermission")]
+        [HttpPut("createPermission")]
         public async Task<ActionResult<User>> CreatePermission([FromBody] PermsCreation permissionRequest)
         {
             if (permissionRequest.Name == string.Empty)
@@ -63,7 +63,7 @@ namespace AtivoPlus.Controllers
             return Ok();
         }
 
-        [HttpPost("deletePermission")]
+        [HttpDelete("deletePermission")]
         public async Task<ActionResult<User>> DeletePermission([FromBody] PermsCreation permissionRequest)
         {
             string Username = UserLogic.CheckUserLoggedRequest(Request);
@@ -90,7 +90,7 @@ namespace AtivoPlus.Controllers
             public string PermissionName { get; set; } = string.Empty;
         }
 
-        [HttpPost("addUserPermission")]
+        [HttpPut("addUserPermission")]
         public async Task<ActionResult<User>> AddUserPermission([FromBody] PermsUser userPermission)
         {
             string Username = UserLogic.CheckUserLoggedRequest(Request);
@@ -118,7 +118,7 @@ namespace AtivoPlus.Controllers
             return Ok();
         }
 
-        [HttpPost("deleteUserPermission")]
+        [HttpDelete("deleteUserPermission")]
         public async Task<ActionResult<User>> DeleteUserPermission([FromBody] PermsUser userPermission)
         {
             string Username = UserLogic.CheckUserLoggedRequest(Request);
@@ -138,6 +138,17 @@ namespace AtivoPlus.Controllers
             return Ok();
         }
 
+        [HttpGet("getPermissions")]
+        public async Task<ActionResult<List<Permission>>> GetPermissions()
+        {
+            string Username = UserLogic.CheckUserLoggedRequest(Request);
+            if (Username == string.Empty)
+            {
+                return Unauthorized();
+            }
 
+            return await PermissionLogic.GetPermissionsByUsername(db, Username);
+
+        }
     }
 }

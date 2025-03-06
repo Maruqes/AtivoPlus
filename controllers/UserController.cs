@@ -24,7 +24,7 @@ namespace AtivoPlus.Controllers
             public string Password { get; set; } = string.Empty;
         }
 
-        [HttpPost("adicionar")]
+        [HttpPut("adicionar")]
         public async Task<ActionResult<User>> AdicionarUser([FromBody] UserRequest request)
         {
             if (await UserLogic.AddUser(db, request.Username, request.Password) == false)
@@ -67,7 +67,7 @@ namespace AtivoPlus.Controllers
                 return Unauthorized();
             }
 
-            UserLogic.LogoutUser(Username);
+            UserLogic.LogoutUser(Username, UserLogic.GetTokenWithRequest(Request));
 
             ExtraLogic.SetCookie(Response, "username", string.Empty);
             ExtraLogic.SetCookie(Response, "token", string.Empty);
