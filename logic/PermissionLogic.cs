@@ -17,6 +17,14 @@ namespace AtivoPlus.Logic
             }
             return permissions[0].Id;
         }
+
+        /// <summary>
+        /// Converts a string array of permissions to an array of permission IDs
+        /// ["admin", "perm1"] to [-1, 2]
+        /// </summary>
+        /// <param name="db">The database context</param>
+        /// <param name="permsString">The string array of permissions</param>
+        /// <returns>An array of permission IDs</returns>
         public static async Task<int[]> ConvertPermissionStringToID(AppDbContext db, string[] permsString)
         {
             int[] perms = new int[permsString.Length];
@@ -26,6 +34,14 @@ namespace AtivoPlus.Logic
             }
             return perms;
         }
+
+        /// <summary>
+        /// Checks if a user has all the permissions in the string array
+        /// </summary>
+        /// <param name="db">The database context</param>
+        /// <param name="username">The username of the user</param>
+        /// <param name="permsSring">The string array of permissions</param>
+        /// <returns>True if the user has all the permissions, false otherwise</returns>
         public static async Task<bool> CheckPermission(AppDbContext db, string username, string[] permsSring)
         {
 
@@ -55,19 +71,27 @@ namespace AtivoPlus.Logic
             return await db.DoesExistPermission(name);
         }
 
+        /// <summary>
+        /// Adds a permission to the database
+        /// </summary>
+        /// <param name="db">The database context</param>
+        /// <param name="name">The name of the permission</param>
+        /// <returns>True if the permission was added, false otherwise</returns>
         public static async Task<bool> AddPermission(AppDbContext db, string name)
         {
             if (await db.DoesExistPermission(name) == true)
             {
                 return false;
             }
-            Permission permission = new Permission();
-            permission.Name = name;
-            db.Permissions.Add(permission);
-            await db.SaveChangesAsync();
-            return true;
+            return await db.AddPermission(name);
         }
 
+        /// <summary>
+        /// Deletes a permission from the database
+        /// </summary>
+        /// <param name="db">The database context</param>
+        /// <param name="name">The name of the permission</param>
+        /// <returns>True if the permission was deleted, false otherwise</returns>
         public static async Task<bool> DeletePermission(AppDbContext db, string name)
         {
             if (await db.DoesExistPermission(name) == false)
@@ -79,6 +103,13 @@ namespace AtivoPlus.Logic
         }
 
 
+        /// <summary>
+        /// Adds a permission to a user
+        /// </summary>
+        /// <param name="db">The database context</param>
+        /// <param name="username">The username of the user</param>
+        /// <param name="permissionName">The name of the permission</param>
+        /// <returns>True if the permission was added, false otherwise</returns>
         public static async Task<bool> AddUserPermission(AppDbContext db, string username, string permissionName)
         {
             int userID = await UserLogic.GetUserID(db, username);
@@ -103,6 +134,13 @@ namespace AtivoPlus.Logic
             return true;
         }
 
+        /// <summary>
+        /// Deletes a permission from a user
+        /// </summary>
+        /// <param name="db">The database context</param>
+        /// <param name="username">The username of the user</param>
+        /// <param name="permissionName">The name of the permission</param>
+        /// <returns>True if the permission was deleted, false otherwise</returns>
         public static async Task<bool> DeleteUserPermission(AppDbContext db, string username, string permissionName)
         {
             int userID = await UserLogic.GetUserID(db, username);
@@ -125,6 +163,12 @@ namespace AtivoPlus.Logic
             return true;
         }
 
+        /// <summary>
+        /// Gets all the permissions of a user
+        /// </summary>
+        /// <param name="db">The database context</param>
+        /// <param name="username">The username of the user</param>
+        /// <returns>A list of permissions that username has</returns>
         public static async Task<List<Permission>> GetPermissionsByUsername(AppDbContext db, string username)
         {
             int userID = await UserLogic.GetUserID(db, username);

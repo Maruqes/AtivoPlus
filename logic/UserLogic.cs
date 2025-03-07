@@ -15,9 +15,21 @@ namespace AtivoPlus.Logic
 
     class UserLogic
     {
+        /*
+        where we store the user login data, a username can only have one token
+        limits the number of tokens to 1 per user, so only one device can be logged in at a time
+
+        a token is a random string that is generated when a user logs in and is stored in a cookie to identify the user
+        only that user can use that token to authenticate himself in the future
+        */
         private static ConcurrentDictionary<string, LoginToken> userData = new ConcurrentDictionary<string, LoginToken>();
 
-        //if already exists substituir 
+        /// <summary>
+        /// Adds a new user to the user data and returns the token generated for the user.
+        /// </summary>
+        /// <param name="username">The username of the user to add.</param>
+        /// <returns>The token generated for the user.</returns>
+
         private static string AddUserData(string username)
         {
             string token = Guid.NewGuid().ToString();
@@ -30,11 +42,18 @@ namespace AtivoPlus.Logic
             return token;
         }
 
+        /// <summary>
+        /// Removes the user with the given username from the user data.
+        /// </summary>
+
         private static void RemoveUserData(string username)
         {
             userData.TryRemove(username, out _);
         }
 
+        /// <summary>
+        /// Removes all users that have not logged in for more than 7 days.
+        /// </summary>
         public static void RemoveOutdatedLogins()
         {
             foreach (var usr in userData.Keys.ToList())
@@ -47,6 +66,9 @@ namespace AtivoPlus.Logic
             }
         }
 
+        /// <summary>
+        /// Updates the last login date of the user with the given username.
+        /// </summary>
         public static void UpdateLoginDate(string username)
         {
             if (userData.TryGetValue(username, out var lt))
@@ -56,6 +78,14 @@ namespace AtivoPlus.Logic
             }
         }
 
+        ///<summary>
+        ///Checks if the user is logged in
+        ///</summary>
+        ///<param name="username">The username of the user to check.</param>
+        ///<param name="token">The token of the user to check.</param>
+        ///<returns>
+        ///<c>true</c> if the user is logged in; otherwise, <c>false</c>.
+        ///</returns>
         public static bool CheckUserLogged(string username, string token)
         {
             if (userData.TryGetValue(username, out var storedToken) && storedToken.token == token)
@@ -74,11 +104,13 @@ namespace AtivoPlus.Logic
 
         public static async Task<bool> AddUser(AppDbContext db, string Username, string Password)
         {
+            //check if user already exists
             if (await CheckIfUserExists(db, Username))
             {
                 return false;
             }
 
+            //hash password for example -> 123 -> $2a$11$1qZQ7j....
             string hash = BCrypt.Net.BCrypt.HashPassword(Password);
 
             User novoUser = new()
@@ -94,6 +126,16 @@ namespace AtivoPlus.Logic
             return true;
         }
 
+        /// <summary>
+        /// Asynchronously checks if the provided password matches the stored password hash for the user with the given username.
+        /// </summary>
+        /// <param name="db">An instance of <c>AppDbContext</c> to access the user data.</param>
+        /// <param name="Username">The username of the user to validate.</param>
+        /// <param name="Password">The password provided for verification.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains <c>true</c>
+        /// if the password matches the stored hash for the user; otherwise, <c>false</c>.
+        /// </returns>
         public static async Task<bool> CheckPassword(AppDbContext db, string Username, string Password)
         {
             List<User> users = await db.GetUserByUsername(Username);
