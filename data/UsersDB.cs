@@ -23,9 +23,14 @@ namespace AtivoPlus.Data
         }
 
 
-        public async Task<List<User>> GetUserByUsername(string Username)
+        public async Task<User> GetUserByUsername(string Username)
         {
-            return await Users.FromSqlInterpolated($"SELECT * FROM \"Users\" WHERE \"Username\" = {Username}").ToListAsync();
+            return await Users.FromSqlInterpolated($"SELECT * FROM \"Users\" WHERE \"Username\" = {Username}").SingleOrDefaultAsync();
+        }
+
+        public async Task<User> GetUserById(int Id)
+        {
+            return await Users.FromSqlInterpolated($"SELECT * FROM \"Users\" WHERE \"Id\" = {Id}").SingleOrDefaultAsync();
         }
 
         public async Task<bool> DoesExistUser(string Username)

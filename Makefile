@@ -4,5 +4,5 @@ dev:
 prod:
 	ASPNETCORE_ENVIRONMENT=Production dotnet run
 
-test:
-	dotnet test
+teste:
+	ASPNETCORE_ENVIRONMENT=Development dotnet test

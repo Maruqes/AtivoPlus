@@ -96,10 +96,16 @@ namespace AtivoPlus.Logic
             return false;
         }
 
-        private static async Task<bool> CheckIfUserExists(AppDbContext db, string Username)
+        public static async Task<bool> CheckIfUserExists(AppDbContext db, string Username)
         {
-            List<User> users = await db.GetUserByUsername(Username);
-            return users.Count != 0;
+            User users = await db.GetUserByUsername(Username);
+            return users != null;
+        }
+
+        public static async Task<bool> CheckIfUserExistsById(AppDbContext db, int id)
+        {
+            User users = await db.GetUserById(id);
+            return users != null;
         }
 
         public static async Task<bool> AddUser(AppDbContext db, string Username, string Password)
@@ -138,13 +144,12 @@ namespace AtivoPlus.Logic
         /// </returns>
         public static async Task<bool> CheckPassword(AppDbContext db, string Username, string Password)
         {
-            List<User> users = await db.GetUserByUsername(Username);
-            if (users == null)
+            User user = await db.GetUserByUsername(Username);
+            if (user == null)
             {
                 return false;
             }
 
-            var user = users.FirstOrDefault(user => user.Username.Equals(Username));
             return user != null && BCrypt.Net.BCrypt.Verify(Password, user.Hash);
         }
 
@@ -206,13 +211,7 @@ namespace AtivoPlus.Logic
 
         public static async Task<int> GetUserID(AppDbContext db, string Username)
         {
-            List<User> users = await db.GetUserByUsername(Username);
-            if (users == null)
-            {
-                return -1;
-            }
-
-            var user = users.FirstOrDefault(user => user.Username.Equals(Username));
+            User user = await db.GetUserByUsername(Username);
             if (user == null)
             {
                 return -1;
@@ -221,3 +220,4 @@ namespace AtivoPlus.Logic
         }
     }
 }
+
