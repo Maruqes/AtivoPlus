@@ -63,6 +63,9 @@ namespace AtivoPlus.Tests
             Assert.True(UserLogic.CheckUserLogged("testUser2", token));
             Assert.False(UserLogic.CheckUserLogged("testUser2", badToken));
 
+            UserLogic.LogoutUser("testUser2", badToken);
+            Assert.True(UserLogic.CheckUserLogged("testUser2", token));
+
             //logout and test old token
             UserLogic.LogoutUser("testUser2", token);
             Assert.False(UserLogic.CheckUserLogged("testUser2", token));
