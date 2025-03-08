@@ -98,13 +98,13 @@ namespace AtivoPlus.Logic
 
         public static async Task<bool> CheckIfUserExists(AppDbContext db, string Username)
         {
-            User users = await db.GetUserByUsername(Username);
+            User? users = await db.GetUserByUsername(Username);
             return users != null;
         }
 
         public static async Task<bool> CheckIfUserExistsById(AppDbContext db, int id)
         {
-            User users = await db.GetUserById(id);
+            User? users = await db.GetUserById(id);
             return users != null;
         }
 
@@ -144,7 +144,7 @@ namespace AtivoPlus.Logic
         /// </returns>
         public static async Task<bool> CheckPassword(AppDbContext db, string Username, string Password)
         {
-            User user = await db.GetUserByUsername(Username);
+            User? user = await db.GetUserByUsername(Username);
             if (user == null)
             {
                 return false;
@@ -209,12 +209,12 @@ namespace AtivoPlus.Logic
             return cookieUsername;
         }
 
-        public static async Task<int> GetUserID(AppDbContext db, string Username)
+        public static async Task<int?> GetUserID(AppDbContext db, string Username)
         {
-            User user = await db.GetUserByUsername(Username);
+            User? user = await db.GetUserByUsername(Username);
             if (user == null)
             {
-                return -1;
+                return null;
             }
             return user.Id;
         }

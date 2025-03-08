@@ -12,8 +12,12 @@ namespace AtivoPlus.Logic
             // -1 indicates use the owner’s userId
             if (carteira.UserId == -1)
             {
-                int userId = await UserLogic.GetUserID(db, username);
-                await db.CreateCarteira(userId, carteira.Nome);
+                int? userId = await UserLogic.GetUserID(db, username);
+                if (userId == null)
+                {
+                    return new UnauthorizedResult();
+                }
+                await db.CreateCarteira(userId.Value, carteira.Nome);
             }
             else
             {
@@ -34,13 +38,13 @@ namespace AtivoPlus.Logic
                 return new NotFoundResult();
             }
 
-            int userId = await UserLogic.GetUserID(db, username);
-            if (userId == -1)
+            int? userId = await UserLogic.GetUserID(db, username);
+            if (userId == null)
             {
                 return new UnauthorizedResult();
             }
 
-            if (userId != userIdFromCarteira && !await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
+            if (userId.Value != userIdFromCarteira && !await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
             {
                 return new UnauthorizedResult();
             }
@@ -57,13 +61,13 @@ namespace AtivoPlus.Logic
                 return new NotFoundResult();
             }
 
-            int userId = await UserLogic.GetUserID(db, username);
-            if (userId == -1)
+            int? userId = await UserLogic.GetUserID(db, username);
+            if (userId == null)
             {
                 return new UnauthorizedResult();
             }
 
-            if (userId != userIdFromCarteira && !await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
+            if (userId.Value != userIdFromCarteira && !await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
             {
                 return new UnauthorizedResult();
             }

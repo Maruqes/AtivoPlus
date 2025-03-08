@@ -93,8 +93,8 @@ namespace AtivoPlus.Controllers
                 return Unauthorized();
             }
 
-            int userId = await UserLogic.GetUserID(db, username);
-            if (userId == -1)
+            int? userId = await UserLogic.GetUserID(db, username);
+            if (userId == null)
             {
                 return Unauthorized();
             }

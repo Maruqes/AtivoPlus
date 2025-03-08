@@ -14,7 +14,11 @@ namespace AtivoPlus.Logic
             if (userInfoRequest.Id == -1)
             {
                 //é o proprio utilizador
-                int userId = await UserLogic.GetUserID(db, Username);
+                int? userId = await UserLogic.GetUserID(db, Username);
+                if (userId == null)
+                {
+                    return new UnauthorizedResult();
+                }
                 final_id = userId;
             }
             else
@@ -49,7 +53,12 @@ namespace AtivoPlus.Logic
         {
             if (id == -1)
             {
-                id = await UserLogic.GetUserID(db, username);
+                int? newid = await UserLogic.GetUserID(db, username);
+                if (newid == null)
+                {
+                    return null;
+                }
+                id = newid.Value;
             }
             else
             {

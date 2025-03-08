@@ -62,21 +62,21 @@ if (args.Length > 0 && args[0] == "--addadmin")
     var username = args[1];
     var db = getDb();
 
-    int userID = await UserLogic.GetUserID(db, username);
-    if (userID == -1)
+    int? userID = await UserLogic.GetUserID(db, username);
+    if (userID == null)
     {
         Console.WriteLine("User does not exist");
         return;
     }
 
-    int permID = await PermissionLogic.GetPermissionID(db, "admin");
-    if (permID == -2)
+    int? permID = await PermissionLogic.GetPermissionID(db, "admin");
+    if (permID == null)
     {
         Console.WriteLine("Permission does not exist");
         return;
     }
 
-    if (await db.AddUserPermission(userID, permID) == false)
+    if (await db.AddUserPermission(userID.Value, permID.Value) == false)
     {
         Console.WriteLine("Could not add permission");
         return;
