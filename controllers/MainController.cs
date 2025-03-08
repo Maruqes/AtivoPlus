@@ -20,6 +20,9 @@ namespace AtivoPlus.Controllers
         }
 
 
+        /*
+        all endpoints current for testing purposes only no need for docs
+        */
 
         [HttpGet]
         public IActionResult ServeFile()

@@ -6,7 +6,9 @@ namespace AtivoPlus.Logic
 {
     class ExtraLogic
     {
-        //create admin permission if it does not exist
+        /// <summary>
+        /// Verifica se a permissão 'admin' já existe, e cria-a caso não exista
+        /// </summary>
         public static void SetUpAdminPermission(AppDbContext db)
         {
             // Verifica se a permissão 'admin' já existe
@@ -49,6 +51,9 @@ namespace AtivoPlus.Logic
             Response.Cookies.Append(key, value, cookie);
         }
 
+        /// <summary>
+        /// uma rotina que corre todos os dias para remover logins antigos
+        /// </summary>
         public async static void CheckUsersTokens()
         {
             while (true)

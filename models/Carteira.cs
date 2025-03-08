@@ -16,4 +16,3 @@ namespace AtivoPlus.Models
         public DateTime DataCriacao { get; set; }
     }
 }
-
