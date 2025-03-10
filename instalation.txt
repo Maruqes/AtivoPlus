@@ -19,6 +19,9 @@ migrar db do cs para o banco
 dotnet-ef migrations add InitialCreate
 dotnet-ef database update
 
+dotnet-ef migrations script --idempotent
+
+
 
 git checkout -b nova-branch
 git push -u origin nova-branch
