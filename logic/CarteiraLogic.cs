@@ -25,6 +25,10 @@ namespace AtivoPlus.Logic
                 {
                     return new UnauthorizedResult();
                 }
+                if (!await UserLogic.CheckIfUserExistsById(db, carteira.UserId))
+                {
+                    return new BadRequestResult();
+                }
                 await db.CreateCarteira(carteira.UserId, carteira.Nome);
             }
             return new OkResult();
