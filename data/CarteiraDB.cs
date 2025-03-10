@@ -65,7 +65,7 @@ namespace AtivoPlus.Data
             return true;
         }
 
-        public async Task<List<Carteira>> GetCarteiras(int userId)
+        public async Task<List<Carteira>> GetCarteirasByUserId(int userId)
         {
             return await Carteiras.Where(c => c.UserId == userId).ToListAsync();
         }

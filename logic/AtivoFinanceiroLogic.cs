@@ -21,8 +21,6 @@ namespace AtivoPlus.Logic
             // -1 indicates use the owner’s userId
             if (ativoFinanceiro.UserId == -1)
             {
-                
-                
                 int? userId = await UserLogic.GetUserID(db, username);
                 if (userId == null)
                 {

@@ -22,6 +22,31 @@ namespace AtivoPlus.Data
             return entidade;
         }
 
+        public async Task<EntidadeAtivo?> GetEntidadeAtivo(int id)
+        {
+            return await entidades.FindAsync(id);
+        }
+
+        public async Task ApagarEntidadeAtivo(int id)
+        {
+            var entidade = await entidades.FindAsync(id);
+            if (entidade != null)
+            {
+                entidades.Remove(entidade);
+                await SaveChangesAsync();
+            }
+        }
+
+        public async Task<List<EntidadeAtivo>> GetEntidadeAtivoByUserId(int userId)
+        {
+            return await entidades.Where(e => e.UserId == userId).ToListAsync();
+        }
+
+        public async Task<bool> DoesEntidadeExist(int id)
+        {
+            return await entidades.AnyAsync(e => e.Id == id);
+        }
+
 
     }
 }

@@ -113,7 +113,7 @@ namespace AtivoPlus.Controllers
             }
 
 
-            return Ok(await db.GetCarteiras(userIdFromCarteira.Value));
+            return Ok(await db.GetCarteirasByUserId(userIdFromCarteira.Value));
         }
 
     }
