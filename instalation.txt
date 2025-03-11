@@ -11,7 +11,7 @@ dotnet add package Microsoft.AspNetCore.Mvc.Testing
 extra:
 dotnet add package BCrypt.Net-Next
 dotnet add package Swashbuckle.AspNetCore
-
+dotnet add package DotNetEnv
 
 
 

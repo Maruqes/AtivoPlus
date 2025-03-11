@@ -85,6 +85,9 @@ if (args.Length > 0 && args[0] == "--addadmin")
     Console.WriteLine($"Administrador '{username}' adicionado com sucesso!");
     return;
 }
+AlphaVantageLogic.StartAlphaVantageLogic();
+Console.WriteLine("AlphaVantageLogic started");
+
 
 app.UseStaticFiles();
 app.UseRouting();
