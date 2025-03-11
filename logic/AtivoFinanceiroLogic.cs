@@ -9,17 +9,33 @@ namespace AtivoPlus.Logic
     {
         public static async Task<ActionResult> AlterarAtivoFinanceiroParaOutraCarteira(AppDbContext db, AtivoFinanceiroAlterarCarteiraRequest ativoFinanceiro, string username)
         {
-            if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
+            if (ativoFinanceiro.UserId == -1)
             {
-                return new UnauthorizedResult();
-            }
+                int? userId = await UserLogic.GetUserID(db, username);
+                if (userId == null)
+                {
+                    return new UnauthorizedResult();
+                }
+                if (!await CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, userId.Value))
+                {
+                    return new UnauthorizedResult();
+                }
+                await db.ChangeAtivoFinanceiroCarteira(ativoFinanceiro.AtivoFinanceiroId, ativoFinanceiro.CarteiraId);
 
-            if (!await CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, ativoFinanceiro.UserId))
+                return new OkResult();
+            }
+            else
             {
-                return new UnauthorizedResult();
+                if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
+                {
+                    return new UnauthorizedResult();
+                }
+                if(!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, ativoFinanceiro.UserId).Result)
+                {
+                    return new UnauthorizedResult();
+                }
+                await db.ChangeAtivoFinanceiroCarteira(ativoFinanceiro.AtivoFinanceiroId, ativoFinanceiro.CarteiraId);
             }
-
-            await db.ChangeAtivoFinanceiroCarteira(ativoFinanceiro.AtivoFinanceiroId, ativoFinanceiro.CarteiraId);
             return new OkResult();
         }
 
