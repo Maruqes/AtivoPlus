@@ -19,10 +19,11 @@ namespace AtivoPlus.Controllers
         public float TaxaImposto { get; set; }
     }
 
-    public class AtivoFinanceiroAlterarNomeRequest
+    public class AtivoFinanceiroAlterarCarteiraRequest
     {
+        public int UserId { get; set; }
         public int AtivoFinanceiroId { get; set; }
-        public string Nome { get; set; } = string.Empty;
+        public int CarteiraId { get; set; }
     }
 
     [Route("api/ativofinanceiro")] // A API está definida em "api/user"
@@ -45,6 +46,17 @@ namespace AtivoPlus.Controllers
                 return Unauthorized();
             }
             return await AtivoFinanceiroLogic.AdicionarAtivoFinanceiro(db, ativoFinanceiro, username);
+        }
+
+        [HttpPut("alterarCarteira")]
+        public async Task<ActionResult> AlterarAtivoFinanceiroParaOutraCarteira([FromBody] AtivoFinanceiroAlterarCarteiraRequest ativoFinanceiro)
+        {
+            string username = UserLogic.CheckUserLoggedRequest(Request);
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+            return await AtivoFinanceiroLogic.AlterarAtivoFinanceiroParaOutraCarteira(db, ativoFinanceiro, username);
         }
 
     }

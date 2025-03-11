@@ -7,6 +7,22 @@ namespace AtivoPlus.Logic
 {
     public class AtivoFinanceiroLogic
     {
+        public static async Task<ActionResult> AlterarAtivoFinanceiroParaOutraCarteira(AppDbContext db, AtivoFinanceiroAlterarCarteiraRequest ativoFinanceiro, string username)
+        {
+            if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
+            {
+                return new UnauthorizedResult();
+            }
+
+            if (!await CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, ativoFinanceiro.UserId))
+            {
+                return new UnauthorizedResult();
+            }
+
+            await db.ChangeAtivoFinanceiroCarteira(ativoFinanceiro.AtivoFinanceiroId, ativoFinanceiro.CarteiraId);
+            return new OkResult();
+        }
+
 
         public static async Task<bool> CheckCarteiraOwner(AppDbContext db, int carteiraId, int userId)
         {
