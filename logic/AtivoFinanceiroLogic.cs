@@ -7,6 +7,13 @@ namespace AtivoPlus.Logic
 {
     public class AtivoFinanceiroLogic
     {
+
+        public static async Task<bool> CheckCarteiraOwner(AppDbContext db, int carteiraId, int userId)
+        {
+            int? carteiraOwnerId = await db.GetUserIdFromCarteira(carteiraId);
+            return carteiraOwnerId == userId;
+        }
+
         public static async Task<ActionResult> AlterarAtivoFinanceiroParaOutraCarteira(AppDbContext db, AtivoFinanceiroAlterarCarteiraRequest ativoFinanceiro, string username)
         {
             if (ativoFinanceiro.UserId == -1)
@@ -30,7 +37,7 @@ namespace AtivoPlus.Logic
                 {
                     return new UnauthorizedResult();
                 }
-                if(!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, ativoFinanceiro.UserId).Result)
+                if (!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, ativoFinanceiro.UserId).Result)
                 {
                     return new UnauthorizedResult();
                 }
@@ -40,15 +47,10 @@ namespace AtivoPlus.Logic
         }
 
 
-        public static async Task<bool> CheckCarteiraOwner(AppDbContext db, int carteiraId, int userId)
-        {
-            int? carteiraOwnerId = await db.GetUserIdFromCarteira(carteiraId);
-            return carteiraOwnerId == userId;
-        }
 
         public static async Task<ActionResult> AdicionarAtivoFinanceiro(AppDbContext db, AtivoFinanceiroRequest ativoFinanceiro, string username)
         {
-        
+
 
             // -1 indicates use the owner’s userId
             if (ativoFinanceiro.UserId == -1)
@@ -59,7 +61,7 @@ namespace AtivoPlus.Logic
                     return new UnauthorizedResult();
                 }
 
-                if(!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, userId.Value).Result)
+                if (!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, userId.Value).Result)
                 {
                     return new UnauthorizedResult();
                 }
@@ -72,7 +74,7 @@ namespace AtivoPlus.Logic
                 {
                     return new UnauthorizedResult();
                 }
-                if(!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, ativoFinanceiro.UserId).Result)
+                if (!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, ativoFinanceiro.UserId).Result)
                 {
                     return new UnauthorizedResult();
                 }
