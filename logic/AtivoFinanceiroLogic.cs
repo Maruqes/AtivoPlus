@@ -14,9 +14,43 @@ namespace AtivoPlus.Logic
             return carteiraOwnerId == userId;
         }
 
+        public static async Task<ActionResult> AlterarAtivoFinanceiroParaOutraCarteira(AppDbContext db, AtivoFinanceiroAlterarCarteiraRequest ativoFinanceiro, string username)
+        {
+            if (ativoFinanceiro.UserId == -1)
+            {
+                int? userId = await UserLogic.GetUserID(db, username);
+                if (userId == null)
+                {
+                    return new UnauthorizedResult();
+                }
+                if (!await CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, userId.Value))
+                {
+                    return new UnauthorizedResult();
+                }
+                await db.ChangeAtivoFinanceiroCarteira(ativoFinanceiro.AtivoFinanceiroId, ativoFinanceiro.CarteiraId);
+
+                return new OkResult();
+            }
+            else
+            {
+                if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
+                {
+                    return new UnauthorizedResult();
+                }
+                if (!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, ativoFinanceiro.UserId).Result)
+                {
+                    return new UnauthorizedResult();
+                }
+                await db.ChangeAtivoFinanceiroCarteira(ativoFinanceiro.AtivoFinanceiroId, ativoFinanceiro.CarteiraId);
+            }
+            return new OkResult();
+        }
+
+
+
         public static async Task<ActionResult> AdicionarAtivoFinanceiro(AppDbContext db, AtivoFinanceiroRequest ativoFinanceiro, string username)
         {
-        
+
 
             // -1 indicates use the owner’s userId
             if (ativoFinanceiro.UserId == -1)
@@ -27,7 +61,7 @@ namespace AtivoPlus.Logic
                     return new UnauthorizedResult();
                 }
 
-                if(!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, userId.Value).Result)
+                if (!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, userId.Value).Result)
                 {
                     return new UnauthorizedResult();
                 }
@@ -40,7 +74,7 @@ namespace AtivoPlus.Logic
                 {
                     return new UnauthorizedResult();
                 }
-                if(!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, ativoFinanceiro.UserId).Result)
+                if (!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, ativoFinanceiro.UserId).Result)
                 {
                     return new UnauthorizedResult();
                 }

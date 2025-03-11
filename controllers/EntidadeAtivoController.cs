@@ -72,7 +72,7 @@ namespace AtivoPlus.Controllers
             }
             else
             {
-                if (userId != userIdFromEntidade && await PermissionLogic.CheckPermission(db, username, new[] { "admin" }) == false)
+                if (await PermissionLogic.CheckPermission(db, username, new[] { "admin" }) == false)
                 {
                     return Unauthorized();
                 }
