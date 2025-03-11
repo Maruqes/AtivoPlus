@@ -55,5 +55,10 @@ namespace AtivoPlus.Data
             return ativoFinanceiro?.UserId;
         }
 
+        public async Task<List<AtivoFinanceiro>> GetAtivoByUserId(int userId)
+        {
+            return await AtivoFinanceiros.Where(c => c.UserId == userId).ToListAsync();
+        }
+
     }
 }

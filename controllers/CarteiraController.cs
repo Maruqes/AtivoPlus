@@ -99,14 +99,14 @@ namespace AtivoPlus.Controllers
                 return Unauthorized();
             }
 
-            if ((userIdFromCarteira == null || userIdFromCarteira == -1))
+            if (userIdFromCarteira == null || userIdFromCarteira == -1)
             {
                 userIdFromCarteira = userId;
 
             }
             else
             {
-                if (userId != userIdFromCarteira && await PermissionLogic.CheckPermission(db, username, new[] { "admin" }) == false)
+                if (await PermissionLogic.CheckPermission(db, username, new[] { "admin" }) == false)
                 {
                     return Unauthorized();
                 }

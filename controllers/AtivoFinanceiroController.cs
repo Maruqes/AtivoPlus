@@ -48,7 +48,7 @@ namespace AtivoPlus.Controllers
             return await AtivoFinanceiroLogic.AdicionarAtivoFinanceiro(db, ativoFinanceiro, username);
         }
 
-        [HttpPut("alterarCarteira")]
+        [HttpPost("alterarCarteira")]
         public async Task<ActionResult> AlterarAtivoFinanceiroParaOutraCarteira([FromBody] AtivoFinanceiroAlterarCarteiraRequest ativoFinanceiro)
         {
             string username = UserLogic.CheckUserLoggedRequest(Request);
@@ -57,6 +57,36 @@ namespace AtivoPlus.Controllers
                 return Unauthorized();
             }
             return await AtivoFinanceiroLogic.AlterarAtivoFinanceiroParaOutraCarteira(db, ativoFinanceiro, username);
+        }
+
+        [HttpGet("ver")]
+        public async Task<ActionResult<List<AtivoFinanceiro>>> VerAtivos(int? userIdFromAtivo)
+        {
+            string username = UserLogic.CheckUserLoggedRequest(Request);
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+
+            int? userId = await UserLogic.GetUserID(db, username);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            if (userIdFromAtivo == null || userIdFromAtivo == -1)
+            {
+                userIdFromAtivo = userId;
+
+            }
+            else
+            {
+                if (await PermissionLogic.CheckPermission(db, username, new[] { "admin" }) == false)
+                {
+                    return Unauthorized();
+                }
+            }
+            return Ok(await db.GetAtivoByUserId(userIdFromAtivo.Value));
         }
 
     }
