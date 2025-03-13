@@ -11,7 +11,7 @@ dotnet add package Microsoft.AspNetCore.Mvc.Testing
 extra:
 dotnet add package BCrypt.Net-Next
 dotnet add package Swashbuckle.AspNetCore
-
+dotnet add package DotNetEnv
 
 
 
@@ -25,3 +25,7 @@ dotnet-ef migrations script --idempotent
 
 git checkout -b nova-branch
 git push -u origin nova-branch
+
+
+in .env create
+ALPHAVANTAGE_API_KEY="apikey"
