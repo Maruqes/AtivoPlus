@@ -85,8 +85,11 @@ if (args.Length > 0 && args[0] == "--addadmin")
     Console.WriteLine($"Administrador '{username}' adicionado com sucesso!");
     return;
 }
-AlphaVantageLogic.StartAlphaVantageLogic();
-Console.WriteLine("AlphaVantageLogic started");
+FinnhubLogic.StartFinnhubLogic();
+Console.WriteLine(FinnhubLogic.GetETF("SPY").Result);
+Console.WriteLine(FinnhubLogic.GetStock("AAPL").Result);
+Console.WriteLine(FinnhubLogic.GetCrypto("BTC").Result);
+Console.WriteLine("StartFinnhubLogic started");
 
 
 app.UseStaticFiles();

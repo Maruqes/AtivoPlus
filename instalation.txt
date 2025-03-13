@@ -25,3 +25,7 @@ dotnet-ef migrations script --idempotent
 
 git checkout -b nova-branch
 git push -u origin nova-branch
+
+
+in .env create
+ALPHAVANTAGE_API_KEY="apikey"
