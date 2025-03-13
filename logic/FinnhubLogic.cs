@@ -17,7 +17,7 @@ namespace AtivoPlus.Logic
             try
             {
                 // Carrega as variáveis do ficheiro .env
-                Env.Load();
+                Env.Load(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", ".env"));
                 _apiKey = Environment.GetEnvironmentVariable("FINNHUB_API_KEY");
                 if (string.IsNullOrEmpty(_apiKey))
                 {

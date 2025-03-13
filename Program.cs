@@ -86,9 +86,6 @@ if (args.Length > 0 && args[0] == "--addadmin")
     return;
 }
 FinnhubLogic.StartFinnhubLogic();
-Console.WriteLine(FinnhubLogic.GetETF("SPY").Result);
-Console.WriteLine(FinnhubLogic.GetStock("AAPL").Result);
-Console.WriteLine(FinnhubLogic.GetCrypto("BTC").Result);
 Console.WriteLine("StartFinnhubLogic started");
 
 
