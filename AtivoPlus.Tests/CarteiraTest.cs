@@ -44,6 +44,7 @@ namespace AtivoPlus.Tests
             Assert.Equal("CarteiraTeste", carteiras[0].Nome);
         }
 
+        [Fact]
         public async Task AddCarteira2()
         {
             var db = GetPostgresDbContext();
@@ -162,6 +163,31 @@ namespace AtivoPlus.Tests
             carteiras = await CarteiraLogic.GetCarteiras(db, "t2");
             Assert.NotNull(carteiras);
             Assert.Single(carteiras);
+
+            //delete carteira
+            carteiras = await CarteiraLogic.GetCarteiras(db, "admin");
+            Assert.NotNull(carteiras);
+            await CarteiraLogic.ApagarCarteira(db, carteiras[0].Id, "admin");
+            carteiras = await CarteiraLogic.GetCarteiras(db, "admin");
+            Assert.NotNull(carteiras);
+            Assert.Empty(carteiras);
+
+            carteiras = await CarteiraLogic.GetCarteiras(db, "t1");
+            Assert.NotNull(carteiras);
+            await CarteiraLogic.ApagarCarteira(db, carteiras[0].Id, "t1");
+            carteiras = await CarteiraLogic.GetCarteiras(db, "t1");
+            Assert.NotNull(carteiras);
+            Assert.Empty(carteiras);
+
+            carteiras = await CarteiraLogic.GetCarteiras(db, "t2");
+            Assert.NotNull(carteiras);
+            await CarteiraLogic.ApagarCarteira(db, carteiras[0].Id, "t2");
+            carteiras = await CarteiraLogic.GetCarteiras(db, "t2");
+            Assert.NotNull(carteiras);
+            Assert.Empty(carteiras);
+
+
         }
+
     }
 }

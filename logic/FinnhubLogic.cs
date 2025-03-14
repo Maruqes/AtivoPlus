@@ -9,8 +9,8 @@ namespace AtivoPlus.Logic
 {
     public class FinnhubLogic
     {
-        private static string _apiKey;
-        private static HttpClient _httpClient;
+        private static string _apiKey = string.Empty;
+        private static HttpClient _httpClient = null!;
 
         public static void StartFinnhubLogic()
         {
@@ -18,7 +18,7 @@ namespace AtivoPlus.Logic
             {
                 // Carrega as variáveis do ficheiro .env
                 Env.Load(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", ".env"));
-                _apiKey = Environment.GetEnvironmentVariable("FINNHUB_API_KEY");
+                _apiKey = Environment.GetEnvironmentVariable("FINNHUB_API_KEY")!;
                 if (string.IsNullOrEmpty(_apiKey))
                 {
                     throw new Exception("A chave da API não está definida no ficheiro .env.");
