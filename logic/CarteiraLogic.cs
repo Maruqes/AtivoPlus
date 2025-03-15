@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using AtivoPlus.Data;
 using AtivoPlus.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using AtivoPlus.Models;
 
 namespace AtivoPlus.Logic
 {
@@ -78,6 +79,17 @@ namespace AtivoPlus.Logic
 
             await db.DeleteCarteira(carteiraId);
             return new OkResult();
+        }
+
+        public static async Task<List<Carteira>?> GetCarteiras(AppDbContext db, string username)
+        {
+            int? userId = await UserLogic.GetUserID(db, username);
+            if (userId == null)
+            {
+                return null;
+            }
+
+            return await db.GetCarteirasByUserId(userId.Value);
         }
     }
 }

@@ -28,4 +28,4 @@ git push -u origin nova-branch
 
 
 in .env create
-ALPHAVANTAGE_API_KEY="apikey"
+FINNHUB_API_KEY="apikey"
