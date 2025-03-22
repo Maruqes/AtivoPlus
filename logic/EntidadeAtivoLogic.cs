@@ -16,7 +16,7 @@ namespace AtivoPlus.Logic
                 int? userId = await UserLogic.GetUserID(db, username);
                 if (userId == null)
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User not found");
                 }
                 await db.AdicionarEntidadeAtivo(entidade.Nome, userId.Value);
             }
@@ -24,11 +24,11 @@ namespace AtivoPlus.Logic
             {
                 if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User is not an admin");
                 }
                 if (!await UserLogic.CheckIfUserExistsById(db, entidade.UserId))
                 {
-                    return new BadRequestResult();
+                    return new BadRequestObjectResult("User not found");
                 }
                 await db.AdicionarEntidadeAtivo(entidade.Nome, entidade.UserId);
             }
@@ -50,17 +50,17 @@ namespace AtivoPlus.Logic
             int? userId = await UserLogic.GetUserID(db, username);
             if (userId == null)
             {
-                return new UnauthorizedResult();
+                return new UnauthorizedObjectResult("User not found");
             }
 
             if (!await IsEntidadeOwner(db, entidadeId, userId.Value) && !await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
             {
-                return new UnauthorizedResult();
+                return new UnauthorizedObjectResult("User is not an admin");
             }
 
             if (!await db.DoesEntidadeExist(entidadeId))
             {
-                return new NotFoundResult();
+                return new NotFoundObjectResult("Entidade not found");
             }
             await db.ApagarEntidadeAtivo(entidadeId);
             return new OkResult();

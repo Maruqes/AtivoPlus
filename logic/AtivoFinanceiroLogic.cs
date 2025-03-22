@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using AtivoPlus.Data;
 using AtivoPlus.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace AtivoPlus.Logic
 {
@@ -21,11 +22,11 @@ namespace AtivoPlus.Logic
                 int? userId = await UserLogic.GetUserID(db, username);
                 if (userId == null)
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User not found");
                 }
                 if (!await CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, userId.Value))
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User is not the owner of the wallet, trying to do something fishy?");
                 }
                 await db.ChangeAtivoFinanceiroCarteira(ativoFinanceiro.AtivoFinanceiroId, ativoFinanceiro.CarteiraId);
 
@@ -35,11 +36,11 @@ namespace AtivoPlus.Logic
             {
                 if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User is not an admin");
                 }
                 if (!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, ativoFinanceiro.UserId).Result)
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User is not the owner of the wallet, trying to do something fishy?");
                 }
                 await db.ChangeAtivoFinanceiroCarteira(ativoFinanceiro.AtivoFinanceiroId, ativoFinanceiro.CarteiraId);
             }
@@ -58,12 +59,12 @@ namespace AtivoPlus.Logic
                 int? userId = await UserLogic.GetUserID(db, username);
                 if (userId == null)
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User not found");
                 }
 
                 if (!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, userId.Value).Result)
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User is not the owner of the wallet, trying to do something fishy?");
                 }
 
                 await db.CreateAtivoFinanceiro(userId.Value, ativoFinanceiro.EntidadeAtivoId, ativoFinanceiro.CarteiraId, ativoFinanceiro.DataInicio, ativoFinanceiro.DuracaoMeses, ativoFinanceiro.TaxaImposto);
@@ -72,16 +73,36 @@ namespace AtivoPlus.Logic
             {
                 if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User is not an admin");
                 }
                 if (!CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, ativoFinanceiro.UserId).Result)
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User is not the owner of the wallet, trying to do something fishy?");
                 }
                 await db.CreateAtivoFinanceiro(ativoFinanceiro.UserId, ativoFinanceiro.EntidadeAtivoId, ativoFinanceiro.CarteiraId, ativoFinanceiro.DataInicio, ativoFinanceiro.DuracaoMeses, ativoFinanceiro.TaxaImposto);
 
 
             }
+            return new OkResult();
+        }
+
+        public static async Task<ActionResult> RemoveAtivo(AppDbContext db, int ativoId, string username)
+        {
+            int? userId = await UserLogic.GetUserID(db, username);
+            if (userId == null)
+            {
+                return new UnauthorizedObjectResult("User not found");
+            }
+            int? ativoUserId = await db.GetUserIdFromAtivoFinanceiro(ativoId);
+            if (ativoUserId == null)
+            {
+                return new NotFoundObjectResult("Ativo not found");
+            }
+            if (ativoUserId != userId)
+            {
+                return new UnauthorizedObjectResult("User is not the owner of the asset, trying to do something fishy?");
+            }
+            await db.RemoveAtivoFinanceiro(ativoId);
             return new OkResult();
         }
     }

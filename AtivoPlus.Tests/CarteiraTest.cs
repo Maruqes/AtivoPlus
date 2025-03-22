@@ -185,8 +185,6 @@ namespace AtivoPlus.Tests
             carteiras = await CarteiraLogic.GetCarteiras(db, "t2");
             Assert.NotNull(carteiras);
             Assert.Empty(carteiras);
-
-
         }
 
     }
