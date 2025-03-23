@@ -1,6 +1,7 @@
 using AtivoPlus.Models;
 using AtivoPlus.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.HttpResults;
 namespace AtivoPlus.Logic
 {
     class UserInfoLogic
@@ -17,7 +18,7 @@ namespace AtivoPlus.Logic
                 int? userId = await UserLogic.GetUserID(db, Username);
                 if (userId == null)
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User not found");
                 }
                 final_id = userId;
             }
@@ -25,7 +26,7 @@ namespace AtivoPlus.Logic
             {
                 if (await PermissionLogic.CheckPermission(db, Username, new[] { "admin" }) == false)
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User is not an admin");
                 }
 
                 final_id = userInfoRequest.Id;
@@ -33,7 +34,7 @@ namespace AtivoPlus.Logic
 
             if (final_id == null)
             {
-                return new NotFoundResult();
+                return new NotFoundObjectResult("User not found");
             }
 
             bool res = await db.SetUserInfo(final_id.Value, userInfoRequest.Nome, userInfoRequest.Email, userInfoRequest.Telefone, userInfoRequest.Morada, userInfoRequest.NIF, userInfoRequest.IBAN);
@@ -43,7 +44,7 @@ namespace AtivoPlus.Logic
             }
             else
             {
-                return new BadRequestResult(); // 400 Bad Request
+                return new ObjectResult("estourou primasso") { StatusCode = StatusCodes.Status500InternalServerError }; // 500 Internal Server Error
             }
         }
 

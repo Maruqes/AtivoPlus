@@ -60,5 +60,17 @@ namespace AtivoPlus.Data
             return await AtivoFinanceiros.Where(c => c.UserId == userId).ToListAsync();
         }
 
+        public async Task RemoveAtivoFinanceiro(int ativoFinanceiroId)
+        {
+            var ativoFinanceiro = await AtivoFinanceiros.FirstOrDefaultAsync(c => c.Id == ativoFinanceiroId);
+            if (ativoFinanceiro == null)
+            {
+                return;
+            }
+
+            AtivoFinanceiros.Remove(ativoFinanceiro);
+            await SaveChangesAsync();
+        }
+
     }
 }

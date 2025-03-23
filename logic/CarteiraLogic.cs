@@ -16,7 +16,7 @@ namespace AtivoPlus.Logic
                 int? userId = await UserLogic.GetUserID(db, username);
                 if (userId == null)
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User not found");
                 }
                 await db.CreateCarteira(userId.Value, carteira.Nome);
             }
@@ -24,11 +24,11 @@ namespace AtivoPlus.Logic
             {
                 if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
                 {
-                    return new UnauthorizedResult();
+                    return new UnauthorizedObjectResult("User is not an admin");
                 }
                 if (!await UserLogic.CheckIfUserExistsById(db, carteira.UserId))
                 {
-                    return new BadRequestResult();
+                    return new BadRequestObjectResult("User not found");
                 }
                 await db.CreateCarteira(carteira.UserId, carteira.Nome);
             }
@@ -40,18 +40,18 @@ namespace AtivoPlus.Logic
             int? userIdFromCarteira = await db.GetUserIdFromCarteira(carteira.CarteiraId);
             if (userIdFromCarteira == null)
             {
-                return new NotFoundResult();
+                return new NotFoundObjectResult("Carteira not found");
             }
 
             int? userId = await UserLogic.GetUserID(db, username);
             if (userId == null)
             {
-                return new UnauthorizedResult();
+                return new UnauthorizedObjectResult("User not found");
             }
 
             if (userId.Value != userIdFromCarteira && !await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
             {
-                return new UnauthorizedResult();
+                return new UnauthorizedObjectResult("User is not an admin");
             }
 
             await db.UpdateCarteiraNome(carteira.CarteiraId, carteira.Nome);
@@ -63,18 +63,18 @@ namespace AtivoPlus.Logic
             int? userIdFromCarteira = await db.GetUserIdFromCarteira(carteiraId);
             if (userIdFromCarteira == null)
             {
-                return new NotFoundResult();
+                return new NotFoundObjectResult("Carteira not found");
             }
 
             int? userId = await UserLogic.GetUserID(db, username);
             if (userId == null)
             {
-                return new UnauthorizedResult();
+                return new UnauthorizedObjectResult("User not found");
             }
 
             if (userId.Value != userIdFromCarteira && !await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
             {
-                return new UnauthorizedResult();
+                return new UnauthorizedObjectResult("User is not an admin");
             }
 
             await db.DeleteCarteira(carteiraId);
