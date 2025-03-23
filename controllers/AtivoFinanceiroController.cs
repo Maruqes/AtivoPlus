@@ -11,10 +11,10 @@ namespace AtivoPlus.Controllers
 
     public class AtivoFinanceiroRequest
     {
-        public int UserId { get; set; } 
-        public int EntidadeAtivoId {get; set;}
+        public int UserId { get; set; }
+        public int EntidadeAtivoId { get; set; }
         public int CarteiraId { get; set; }
-        public DateTime DataInicio { get; set; } 
+        public DateTime DataInicio { get; set; }
         public int DuracaoMeses { get; set; }
         public float TaxaImposto { get; set; }
     }
@@ -87,6 +87,17 @@ namespace AtivoPlus.Controllers
                 }
             }
             return Ok(await db.GetAtivoByUserId(userIdFromAtivo.Value));
+        }
+
+        [HttpDelete("remover")]
+        public async Task<ActionResult> RemoverAtivoFinanceiro(int ativoFinanceiroId)
+        {
+            string username = UserLogic.CheckUserLoggedRequest(Request);
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+            return await AtivoFinanceiroLogic.RemoveAtivo(db, ativoFinanceiroId, username);
         }
 
     }

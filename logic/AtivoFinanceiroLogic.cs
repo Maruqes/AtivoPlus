@@ -88,6 +88,7 @@ namespace AtivoPlus.Logic
 
         public static async Task<ActionResult> RemoveAtivo(AppDbContext db, int ativoId, string username)
         {
+
             int? userId = await UserLogic.GetUserID(db, username);
             if (userId == null)
             {
@@ -98,7 +99,10 @@ namespace AtivoPlus.Logic
             {
                 return new NotFoundObjectResult("Ativo not found");
             }
-            if (ativoUserId != userId)
+
+            bool adminUser = await PermissionLogic.CheckPermission(db, username, new[] { "admin" });
+
+            if (ativoUserId != userId && !adminUser)
             {
                 return new UnauthorizedObjectResult("User is not the owner of the asset, trying to do something fishy?");
             }
