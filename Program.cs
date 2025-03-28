@@ -51,6 +51,7 @@ if (app.Environment.IsDevelopment())
 
 //test push
 
+
 ExtraLogic.SetUpAdminPermission(getDb());
 if (args.Length > 0 && args[0] == "--addadmin")
 {
