@@ -37,16 +37,16 @@ namespace AtivoPlus.Controllers
             db = context;
         }
 
-        // [HttpPut("adicionar")]
-        // public async Task<ActionResult> AdicionarAtivoFinanceiro([FromBody] AtivoFinanceiroRequest ativoFinanceiro)
-        // {
-        //     string username = UserLogic.CheckUserLoggedRequest(Request);
-        //     if (string.IsNullOrEmpty(username))
-        //     {
-        //         return Unauthorized();
-        //     }
-        //     return await AtivoFinanceiroLogic.AdicionarAtivoFinanceiro(db, ativoFinanceiro, username);
-        // }
+        [HttpPut("adicionar")]
+        public async Task<ActionResult> AdicionarAtivoFinanceiro([FromBody] AtivoFinanceiroRequest ativoFinanceiro)
+        {
+            string username = UserLogic.CheckUserLoggedRequest(Request);
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+            return await AtivoFinanceiroLogic.AdicionarAtivoFinanceiro(db, ativoFinanceiro, username);
+        }
 
         [HttpPost("alterarCarteira")]
         public async Task<ActionResult> AlterarAtivoFinanceiroParaOutraCarteira([FromBody] AtivoFinanceiroAlterarCarteiraRequest ativoFinanceiro)
