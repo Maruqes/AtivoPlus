@@ -49,6 +49,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+//test push
+//testing server update
 
 ExtraLogic.SetUpAdminPermission(getDb());
 if (args.Length > 0 && args[0] == "--addadmin")
