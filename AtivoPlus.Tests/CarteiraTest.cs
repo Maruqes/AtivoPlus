@@ -115,6 +115,7 @@ namespace AtivoPlus.Tests
             await CarteiraLogic.AtualizarNomeCarteira(db,
                  new CarteiraAlterarNomeRequest { CarteiraId = carteirasAdmin[0].Id, Nome = "CarteiraTeste3Novo" }, "admin");
             carteirasAdmin = await CarteiraLogic.GetCarteiras(db, "admin");
+            Assert.NotNull(carteirasAdmin);
             Assert.Single(carteirasAdmin);
             Assert.Equal("CarteiraTeste3Novo", carteirasAdmin[0].Nome);
 
@@ -124,6 +125,7 @@ namespace AtivoPlus.Tests
             await CarteiraLogic.AtualizarNomeCarteira(db,
                  new CarteiraAlterarNomeRequest { CarteiraId = carteirasT1[0].Id, Nome = "CarteiraTeste1Novo" }, "t1");
             carteirasT1 = await CarteiraLogic.GetCarteiras(db, "t1");
+            Assert.NotNull(carteirasT1);
             Assert.Single(carteirasT1);
             Assert.Equal("CarteiraTeste1Novo", carteirasT1[0].Nome);
 
@@ -133,17 +135,20 @@ namespace AtivoPlus.Tests
             await CarteiraLogic.AtualizarNomeCarteira(db,
                  new CarteiraAlterarNomeRequest { CarteiraId = carteirasT2[0].Id, Nome = "CarteiraTeste2Novo" }, "t2");
             carteirasT2 = await CarteiraLogic.GetCarteiras(db, "t2");
+            Assert.NotNull(carteirasT2);
             Assert.Single(carteirasT2);
             Assert.Equal("CarteiraTeste2Novo", carteirasT2[0].Nome);
 
             // A user attempting to update another user's wallet should be denied.
             // t2 tries to update t1's wallet.
             carteirasT1 = await CarteiraLogic.GetCarteiras(db, "t1");
+            Assert.NotNull(carteirasT1);
             result = await CarteiraLogic.AtualizarNomeCarteira(db,
                  new CarteiraAlterarNomeRequest { CarteiraId = carteirasT1[0].Id, Nome = "CarteiraTeste1Alterado" }, "t2");
             Assert.IsType<UnauthorizedObjectResult>(result);
             // Similarly, t1 tries to update t2's wallet.
             carteirasT2 = await CarteiraLogic.GetCarteiras(db, "t2");
+            Assert.NotNull(carteirasT2);
             result = await CarteiraLogic.AtualizarNomeCarteira(db,
                  new CarteiraAlterarNomeRequest { CarteiraId = carteirasT2[0].Id, Nome = "CarteiraTeste2Alterado" }, "t1");
             Assert.IsType<UnauthorizedObjectResult>(result);
@@ -153,12 +158,14 @@ namespace AtivoPlus.Tests
                  new CarteiraAlterarNomeRequest { CarteiraId = carteirasT1[0].Id, Nome = "CarteiraTesteADMIN" }, "admin");
             Assert.IsType<OkResult>(result);
             carteirasT1 = await CarteiraLogic.GetCarteiras(db, "t1");
+            Assert.NotNull(carteirasT1);
             Assert.Equal("CarteiraTesteADMIN", carteirasT1[0].Nome);
 
             result = await CarteiraLogic.AtualizarNomeCarteira(db,
                  new CarteiraAlterarNomeRequest { CarteiraId = carteirasT2[0].Id, Nome = "CarteiraTesteADMIN" }, "admin");
             Assert.IsType<OkResult>(result);
             carteirasT2 = await CarteiraLogic.GetCarteiras(db, "t2");
+            Assert.NotNull(carteirasT2);
             Assert.Equal("CarteiraTesteADMIN", carteirasT2[0].Nome);
 
             // -----------------
@@ -171,6 +178,7 @@ namespace AtivoPlus.Tests
             Assert.NotNull(carteirasAdmin);
             await CarteiraLogic.ApagarCarteira(db, carteirasAdmin[0].Id, "admin");
             carteirasAdmin = await CarteiraLogic.GetCarteiras(db, "admin");
+            Assert.NotNull(carteirasAdmin);
             Assert.Empty(carteirasAdmin);
 
             // t1 deletes its own wallet.
@@ -178,6 +186,7 @@ namespace AtivoPlus.Tests
             Assert.NotNull(carteirasT1);
             await CarteiraLogic.ApagarCarteira(db, carteirasT1[0].Id, "t1");
             carteirasT1 = await CarteiraLogic.GetCarteiras(db, "t1");
+            Assert.NotNull(carteirasT1);
             Assert.Empty(carteirasT1);
 
             // t2 deletes its own wallet.
@@ -185,12 +194,14 @@ namespace AtivoPlus.Tests
             Assert.NotNull(carteirasT2);
             await CarteiraLogic.ApagarCarteira(db, carteirasT2[0].Id, "t2");
             carteirasT2 = await CarteiraLogic.GetCarteiras(db, "t2");
+            Assert.NotNull(carteirasT2);
             Assert.Empty(carteirasT2);
 
             // Finally, test that a non-owner cannot delete someone else's wallet.
             // Recreate a wallet for t1 using admin.
             await CarteiraLogic.AdicionarCarteira(db, new CarteiraRequest { Nome = "CarteiraNovo", UserId = t1Id.Value }, "admin");
             carteirasT1 = await CarteiraLogic.GetCarteiras(db, "t1");
+            Assert.NotNull(carteirasT1);
             Assert.Single(carteirasT1);
             result = await CarteiraLogic.ApagarCarteira(db, carteirasT1[0].Id, "t2");
             Assert.IsType<UnauthorizedObjectResult>(result);
