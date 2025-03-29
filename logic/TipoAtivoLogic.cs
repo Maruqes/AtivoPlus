@@ -22,17 +22,17 @@ namespace AtivoPlus.Logic
 
         public static async Task<ActionResult> AlterarTipoAtivo(AppDbContext db, TipoAtivoRequestChangeName tipoAtivo, string username)
         {
-              if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
+            if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
             {
                 return new UnauthorizedObjectResult("User is not an admin");
             }
 
-            await db.UpdateTipoAtivo(tipoAtivo.tipoAtivoId, tipoAtivo.Nome);
+            await db.UpdateTipoAtivo(tipoAtivo.TipoAtivoId, tipoAtivo.Nome);
             return new OkResult();
         }
 
 
-         public static async Task<ActionResult> ApagarTipoAtivo(AppDbContext db, int tipoAtivoId, string username)
+        public static async Task<ActionResult> ApagarTipoAtivo(AppDbContext db, int tipoAtivoId, string username)
         {
             if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
             {

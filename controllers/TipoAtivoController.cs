@@ -7,19 +7,19 @@ using AtivoPlus.Logic;
 //ou app a usar api ou da par por razor em cima desta merda
 
 namespace AtivoPlus.Controllers
-{  
+{
     public class TipoAtivoRequest
-    {   
-        public string Nome { get ; set; } = string.Empty;
+    {
+        public string Nome { get; set; } = string.Empty;
     }
 
     public class TipoAtivoRequestChangeName
-    {   
-        public int tipoAtivoId { get; set; }
-        public string Nome { get ; set; } = string.Empty;
+    {
+        public int TipoAtivoId { get; set; }
+        public string Nome { get; set; } = string.Empty;
     }
 
-   
+
     [Route("api/tipoativo")] // A API está definida em "api/user"
     [ApiController] // Indica que este é um Controller de API
     public class TipoAtivoController : ControllerBase
@@ -42,15 +42,15 @@ namespace AtivoPlus.Controllers
 
             var tipoAtivoModel = new AtivoPlus.Models.TipoAtivo
             {
-            Nome = tipoAtivoRequest.Nome
+                Nome = tipoAtivoRequest.Nome
             };
 
-            
+
             return await TipoAtivoLogic.AdicionarTipoAtivo(db, tipoAtivoModel, username);
         }
 
 
-         [HttpPost("alterarTipoAtivo")]
+        [HttpPost("alterarTipoAtivo")]
         public async Task<ActionResult> AlterarTipoAtivo([FromBody] TipoAtivoRequestChangeName tipoAtivo)
         {
             string username = UserLogic.CheckUserLoggedRequest(Request);
@@ -84,6 +84,6 @@ namespace AtivoPlus.Controllers
             }
             return Ok(await TipoAtivoLogic.GetTiposAtivo(db));
         }
-       
+
     }
 }

@@ -12,7 +12,8 @@ namespace AtivoPlus.Data
 
         public async Task<bool> CreateTipoAtivo(string nome)
         {
-            TipoAtivo tipoAtivo = new TipoAtivo {
+            TipoAtivo tipoAtivo = new TipoAtivo
+            {
                 Nome = nome
             };
 
@@ -22,7 +23,7 @@ namespace AtivoPlus.Data
         }
 
 
-         public async Task<bool> UpdateTipoAtivo(int tipoAtivoId, string novoNome)
+        public async Task<bool> UpdateTipoAtivo(int tipoAtivoId, string novoNome)
         {
             var tipoAtivo = await TiposAtivo.FirstOrDefaultAsync(c => c.Id == tipoAtivoId);
             if (tipoAtivo == null)
