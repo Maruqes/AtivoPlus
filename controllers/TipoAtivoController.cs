@@ -8,55 +8,61 @@ using AtivoPlus.Logic;
 
 namespace AtivoPlus.Controllers
 {  
-    public class BancoRequest
+    public class TipoAtivoRequest
     {   
         public string Nome { get ; set; } = string.Empty;
     }
 
-    public class BancoRequestChangeName
+    public class TipoAtivoRequestChangeName
     {   
-        public int bancoId { get; set; }
+        public int tipoAtivoId { get; set; }
         public string Nome { get ; set; } = string.Empty;
     }
 
    
-    [Route("api/banco")] // A API está definida em "api/user"
+    [Route("api/tipoativo")] // A API está definida em "api/user"
     [ApiController] // Indica que este é um Controller de API
-    public class BancoController : ControllerBase
+    public class TipoAtivoController : ControllerBase
     {
         private readonly AppDbContext db;
 
-        public BancoController(AppDbContext context)
+        public TipoAtivoController(AppDbContext context)
         {
             db = context;
         }
 
-        [HttpPut("adicionar")]
-        public async Task<ActionResult> AdicionarBanco([FromBody] BancoRequest banco)
+        [HttpPut("adicionarTipoAtivo")]
+        public async Task<ActionResult> AdicionarTipoAtivo([FromBody] TipoAtivoRequest tipoAtivoRequest)
         {
             string username = UserLogic.CheckUserLoggedRequest(Request);
             if (string.IsNullOrEmpty(username))
             {
                 return Unauthorized();
             }
+
+            var tipoAtivoModel = new AtivoPlus.Models.TipoAtivo
+            {
+            Nome = tipoAtivoRequest.Nome
+            };
+
             
-            return await BancoLogic.AdicionarBanco(db, banco, username);
+            return await TipoAtivoLogic.AdicionarTipoAtivo(db, tipoAtivoModel, username);
         }
 
 
-         [HttpPost("alterarBanco")]
-        public async Task<ActionResult> AlterarBanco([FromBody] BancoRequestChangeName banco)
+         [HttpPost("alterarTipoAtivo")]
+        public async Task<ActionResult> AlterarTipoAtivo([FromBody] TipoAtivoRequestChangeName tipoAtivo)
         {
             string username = UserLogic.CheckUserLoggedRequest(Request);
             if (string.IsNullOrEmpty(username))
             {
                 return Unauthorized();
             }
-            return await BancoLogic.AlterarBanco(db, banco, username);
+            return await TipoAtivoLogic.AlterarTipoAtivo(db, tipoAtivo, username);
         }
 
         [HttpDelete("apagar")]
-        public async Task<ActionResult> ApagarBanco([FromBody] int bancoId)
+        public async Task<ActionResult> ApagarTipoAtivo([FromBody] int tipoAtivoId)
         {
             string username = UserLogic.CheckUserLoggedRequest(Request);
             if (string.IsNullOrEmpty(username))
@@ -64,19 +70,19 @@ namespace AtivoPlus.Controllers
                 return Unauthorized();
             }
 
-            return await BancoLogic.ApagarBanco(db, bancoId, username);
+            return await TipoAtivoLogic.ApagarTipoAtivo(db, tipoAtivoId, username);
         }
 
 
         [HttpGet("ver")]
-        public async Task<ActionResult<List<Banco>>> VerBancos()
+        public async Task<ActionResult<List<TipoAtivo>>> VerTiposAtivo()
         {
             string username = UserLogic.CheckUserLoggedRequest(Request);
             if (string.IsNullOrEmpty(username))
             {
                 return Unauthorized();
             }
-            return Ok(await BancoLogic.GetBancos(db));
+            return Ok(await TipoAtivoLogic.GetTiposAtivo(db));
         }
        
     }
