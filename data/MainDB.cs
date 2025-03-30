@@ -19,7 +19,6 @@ namespace AtivoPlus.Data
             modelBuilder.Entity<Banco>().ToTable("Banco");
             modelBuilder.Entity<Carteira>().ToTable("Carteira");
             modelBuilder.Entity<DepositoPrazo>().ToTable("DepositoPrazo");
-            modelBuilder.Entity<EntidadeAtivo>().ToTable("EntidadeAtivo");
             modelBuilder.Entity<FundoInvestimento>().ToTable("FundoInvestimento");
             modelBuilder.Entity<ImovelArrendado>().ToTable("ImovelArrendado");
             modelBuilder.Entity<Morada>().ToTable("Morada");
