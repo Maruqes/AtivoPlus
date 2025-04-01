@@ -198,7 +198,7 @@ namespace AtivoPlus.Tests
             // Verificar se os nomes permanecem inalterados
             bancos = await BancoLogic.GetBancos(db);
             Assert.NotNull(bancos);
-            Assert.Equal("BancoTeste1", bancos![0].Nome);
+            Assert.Equal("BancoTeste1", bancos[0].Nome);
             Assert.Equal("BancoTeste2", bancos[1].Nome);
         }
 
