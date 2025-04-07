@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
+using DotNetEnv;
 
 AppDbContext getDb()
 {
@@ -87,7 +87,35 @@ if (args.Length > 0 && args[0] == "--addadmin")
     Console.WriteLine($"Administrador '{username}' adicionado com sucesso!");
     return;
 }
-FinnhubLogic.StartFinnhubLogic();
+// Inicializa com a tua chave (podes ler do .env ou appsettings.json)
+Env.Load(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", ".env"));
+var apiKey = Environment.GetEnvironmentVariable("TWELVE_API")!;
+if (string.IsNullOrEmpty(apiKey))
+{
+    Console.WriteLine("Error: environment variable 'TWELVE_API' not found. Exiting.");
+    Environment.Exit(1);
+}
+TwelveDataLogic.StartTwelveDataLogic(apiKey);
+
+// Ações
+var apple = await TwelveDataLogic.GetStockCandles("AAPL");
+Console.WriteLine($"AAPL: {apple?.Count} candles");
+foreach (var item in apple)
+{
+    Console.WriteLine(item.DateTime);
+    Console.WriteLine(item.Open);
+    Console.WriteLine(item.High);
+    Console.WriteLine(item.Low);
+    Console.WriteLine(item.Volume);
+    Console.WriteLine(item.Open);
+
+}
+// // ETFs
+// var spy = await TwelveDataLogic.GetETFCandles("SPY");
+
+// // Cripto
+// var btc = await TwelveDataLogic.GetCryptoCandles("BTC");
+
 Console.WriteLine("StartFinnhubLogic started");
 
 
