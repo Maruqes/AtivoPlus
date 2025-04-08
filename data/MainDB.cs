@@ -23,6 +23,10 @@ namespace AtivoPlus.Data
             modelBuilder.Entity<ImovelArrendado>().ToTable("ImovelArrendado");
             modelBuilder.Entity<Morada>().ToTable("Morada");
             modelBuilder.Entity<TipoAtivo>().ToTable("TipoAtivo");
+            modelBuilder.Entity<Candle>().ToTable("Candle");
+            modelBuilder.Entity<Candle>()
+                    .HasIndex(c => new { c.Symbol, c.DateTime })
+                    .IsUnique();
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
+using AtivoPlus.Models;
 
 namespace AtivoPlus.Logic
 {
@@ -125,15 +126,4 @@ namespace AtivoPlus.Logic
             return await GetCandles(formattedSymbol, interval, outputSize);
         }
     }
-
-    public class Candle
-    {
-        public DateTime DateTime { get; set; }
-        public decimal Open { get; set; }
-        public decimal High { get; set; }
-        public decimal Low { get; set; }
-        public decimal Close { get; set; }
-        public decimal Volume { get; set; }
-    }
-
 }
