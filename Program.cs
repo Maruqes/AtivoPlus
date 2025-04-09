@@ -98,25 +98,9 @@ if (string.IsNullOrEmpty(apiKey))
 TwelveDataLogic.StartTwelveDataLogic(apiKey);
 
 // Ações
-var apple = await TwelveDataLogic.GetStockCandles("AAPL");
+var apple = await TwelveDataLogic.GetStockCandles("AAPL", getDb(), "1day", DateTime.UtcNow.AddYears(-3));
 Console.WriteLine($"AAPL: {apple?.Count} candles");
-foreach (var item in apple)
-{
-    Console.WriteLine(item.DateTime);
-    Console.WriteLine(item.Open);
-    Console.WriteLine(item.High);
-    Console.WriteLine(item.Low);
-    Console.WriteLine(item.Volume);
-    Console.WriteLine(item.Open);
-
-}
-// // ETFs
-// var spy = await TwelveDataLogic.GetETFCandles("SPY");
-
-// // Cripto
-// var btc = await TwelveDataLogic.GetCryptoCandles("BTC");
-
-Console.WriteLine("StartFinnhubLogic started");
+Console.WriteLine("TwelveData started");
 
 
 app.UseStaticFiles();
