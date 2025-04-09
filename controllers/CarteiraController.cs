@@ -10,12 +10,20 @@ namespace AtivoPlus.Controllers
 {
     public class CarteiraRequest
     {
+        /// <summary>
+        /// Utiliza -1 para indicar o utilizador atualmente autenticado.  
+        /// Qualquer outro ID só pode ser usado por administradores.
+        /// </summary>
         public int UserId { get; set; }
         public string Nome { get; set; } = string.Empty;
     }
 
     public class CarteiraAlterarNomeRequest
     {
+        /// <summary>
+        /// Identificador da carteira a ser alterada
+        /// Se for Admin pode alterar qualquer uma se não só pode alterar uma sua
+        /// </summary>
         public int CarteiraId { get; set; }
         public string Nome { get; set; } = string.Empty;
     }
@@ -71,7 +79,10 @@ namespace AtivoPlus.Controllers
         }
 
 
-
+        /// <summary>
+        /// Apaga uma carteira.
+        /// Id da carteira deve ser do utilizador autenticado ou um admin pode apagar qualquer carteira
+        /// </summary>
         [HttpDelete("apagar")]
         public async Task<ActionResult> ApagarCarteira(int carteiraId)
         {
@@ -84,6 +95,15 @@ namespace AtivoPlus.Controllers
             return await CarteiraLogic.ApagarCarteira(db, carteiraId, username);
         }
 
+        /// <summary>
+        /// Obtém as carteiras associadas a um utilizador.
+        /// Se userIdFromCarteira for -1, obtém as carteiras do utilizador autenticado.
+        /// Se userIdFromCarteira for diferente de -1, verifica se o utilizador autenticado tem permissão de admin.
+        /// Se não tiver permissão, retorna Unauthorized.
+        /// Se tiver permissão, obtém as carteiras do utilizador especificado.
+        /// </summary>
+        /// <param name="userIdFromCarteira">ID do utilizador a partir do qual as carteiras serão obtidas. Se -1, obtém as carteiras do utilizador autenticado.</param>
+        /// <returns>Lista de carteiras associadas ao utilizador.</returns>
         [HttpGet("ver")]
         public async Task<ActionResult<List<Carteira>>> VerCarteira(int? userIdFromCarteira)
         {
