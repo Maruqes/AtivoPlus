@@ -7,23 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using DotNetEnv;
 
-AppDbContext getDb()
-{
-    var configuration = new ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json")
-        .Build();
-
-    string connectionString = configuration.GetConnectionString("PostgreSqlConnection") ?? throw new InvalidOperationException("Connection string 'PostgreSqlConnection' not found.");
-
-    var options = new DbContextOptionsBuilder<AppDbContext>()
-        .UseNpgsql(connectionString)
-        .Options;
-
-    var db = new AppDbContext(options);
-    db.Database.EnsureCreated();
-    return db;
-}
 
 
 
@@ -52,7 +35,7 @@ if (app.Environment.IsDevelopment())
 
 //test 
 
-ExtraLogic.SetUpAdminPermission(getDb());
+ExtraLogic.SetUpAdminPermission(AppDbContext.GetDb());
 if (args.Length > 0 && args[0] == "--addadmin")
 {
     if (args.Length < 2)
@@ -62,7 +45,7 @@ if (args.Length > 0 && args[0] == "--addadmin")
     }
 
     var username = args[1];
-    var db = getDb();
+    var db = AppDbContext.GetDb();
 
     int? userID = await UserLogic.GetUserID(db, username);
     if (userID == null)
@@ -96,11 +79,6 @@ if (string.IsNullOrEmpty(apiKey))
     Environment.Exit(1);
 }
 TwelveDataLogic.StartTwelveDataLogic(apiKey);
-
-// Ações
-var apple = await TwelveDataLogic.GetStockCandles("AAPL", getDb(), "1day", DateTime.UtcNow.AddYears(-3));
-Console.WriteLine($"AAPL: {apple?.Count} candles");
-Console.WriteLine("TwelveData started");
 
 
 app.UseStaticFiles();

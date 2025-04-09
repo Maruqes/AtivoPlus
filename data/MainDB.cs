@@ -5,8 +5,27 @@ using System.Threading.Tasks;
 
 namespace AtivoPlus.Data
 {
+
     public partial class AppDbContext : DbContext
     {
+        public static AppDbContext GetDb()
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            string connectionString = configuration.GetConnectionString("PostgreSqlConnection") ?? throw new InvalidOperationException("Connection string 'PostgreSqlConnection' not found.");
+
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseNpgsql(connectionString)
+                .Options;
+
+            var db = new AppDbContext(options);
+            db.Database.EnsureCreated();
+            return db;
+        }
+
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

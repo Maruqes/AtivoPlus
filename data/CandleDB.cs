@@ -24,13 +24,6 @@ namespace AtivoPlus.Data
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<bool> AddCandle(string symbo, Candle candle)
-        {
-            Candles.Add(candle);
-            await SaveChangesAsync();
-            return true;
-        }
-
         public async Task<bool> AddMultipleCandles(List<Candle> candles)
         {
             // Extrai os símbolos únicos para otimizar a consulta
@@ -48,7 +41,7 @@ namespace AtivoPlus.Data
                 .ToList();
 
             // Se houver candles novos, adiciona-os à base de dados
-            if (newCandles.Any())
+            if (newCandles.Count > 0)
             {
                 await Candles.AddRangeAsync(newCandles);
                 await SaveChangesAsync();
