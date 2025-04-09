@@ -181,7 +181,21 @@ namespace AtivoPlus.Logic
                         Console.WriteLine($"Erro ao converter dados de candle: {ex.Message}");
                     }
                 }
-                db.AddMultipleCandles(candles);
+
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await using var temp_db = AppDbContext.GetDb();
+                        await temp_db.AddMultipleCandles(candles);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Erro ao inserir candles em background: {ex.Message}");
+                    }
+                });
+
+
                 return candles;
             }
             catch (Exception ex)
