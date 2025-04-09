@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
+using DotNetEnv;
 
 AppDbContext getDb()
 {
@@ -87,8 +87,20 @@ if (args.Length > 0 && args[0] == "--addadmin")
     Console.WriteLine($"Administrador '{username}' adicionado com sucesso!");
     return;
 }
-FinnhubLogic.StartFinnhubLogic();
-Console.WriteLine("StartFinnhubLogic started");
+// Inicializa com a tua chave (podes ler do .env ou appsettings.json)
+Env.Load(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", ".env"));
+var apiKey = Environment.GetEnvironmentVariable("TWELVE_API")!;
+if (string.IsNullOrEmpty(apiKey))
+{
+    Console.WriteLine("Error: environment variable 'TWELVE_API' not found. Exiting.");
+    Environment.Exit(1);
+}
+TwelveDataLogic.StartTwelveDataLogic(apiKey);
+
+// Ações
+var apple = await TwelveDataLogic.GetStockCandles("AAPL", getDb(), "1day", DateTime.UtcNow.AddYears(-3));
+Console.WriteLine($"AAPL: {apple?.Count} candles");
+Console.WriteLine("TwelveData started");
 
 
 app.UseStaticFiles();

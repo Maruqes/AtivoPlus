@@ -12,7 +12,8 @@ namespace AtivoPlus.Data
 
         public async Task<bool> CreateBanco(string nome)
         {
-            Banco banco = new Banco {
+            Banco banco = new Banco
+            {
                 Nome = nome
             };
 
@@ -22,7 +23,7 @@ namespace AtivoPlus.Data
         }
 
 
-         public async Task<bool> UpdateBanco(int bancoId, string novoNome)
+        public async Task<bool> UpdateBanco(int bancoId, string novoNome)
         {
             var banco = await Bancos.FirstOrDefaultAsync(c => c.Id == bancoId);
             if (banco == null)
@@ -55,6 +56,14 @@ namespace AtivoPlus.Data
             return await Bancos.ToListAsync();
         }
 
+        public async Task<bool> BancoNameExists(string nome)
+        {
+            return await Bancos.AnyAsync(b => b.Nome == nome);
+        }
 
+        public async Task<Banco?> GetBancoById(int bancoId)
+        {
+            return await Bancos.FirstOrDefaultAsync(b => b.Id == bancoId);
+        }
     }
 }

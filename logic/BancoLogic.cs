@@ -8,11 +8,18 @@ namespace AtivoPlus.Logic
 {
     public class BancoLogic
     {
+
+
         public static async Task<ActionResult> AdicionarBanco(AppDbContext db, BancoRequest banco, string username)
         {
             if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
             {
                 return new UnauthorizedObjectResult("User is not an admin");
+            }
+
+            if (await db.BancoNameExists(banco.Nome))
+            {
+                return new BadRequestObjectResult("Banco já existe");
             }
 
             await db.CreateBanco(banco.Nome);
@@ -22,9 +29,20 @@ namespace AtivoPlus.Logic
 
         public static async Task<ActionResult> AlterarBanco(AppDbContext db, BancoRequestChangeName banco, string username)
         {
-              if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
+            if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
             {
                 return new UnauthorizedObjectResult("User is not an admin");
+            }
+
+            if (await db.BancoNameExists(banco.Nome))
+            {
+                return new BadRequestObjectResult("Banco já existe");
+            }
+
+            var bancoDB = await db.GetBancoById(banco.bancoId);
+            if (bancoDB == null)
+            {
+                return new NotFoundObjectResult("Banco não encontrado");
             }
 
             await db.UpdateBanco(banco.bancoId, banco.Nome);
@@ -32,11 +50,17 @@ namespace AtivoPlus.Logic
         }
 
 
-         public static async Task<ActionResult> ApagarBanco(AppDbContext db, int bancoId, string username)
+        public static async Task<ActionResult> ApagarBanco(AppDbContext db, int bancoId, string username)
         {
             if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
             {
                 return new UnauthorizedObjectResult("User is not an admin");
+            }
+
+            var banco = await db.GetBancoById(bancoId);
+            if (banco == null)
+            {
+                return new NotFoundObjectResult("Banco não encontrado");
             }
 
             await db.DeleteBanco(bancoId);
