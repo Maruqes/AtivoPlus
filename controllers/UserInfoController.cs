@@ -35,6 +35,10 @@ namespace AtivoPlus.Controllers
 
         //if Id = -1, é o proprio utilizador
         //if Id = "um id", é o admin
+        /// <summary>
+        /// Utiliza -1 para indicar o utilizador atualmente autenticado.  
+        /// Qualquer outro ID só pode ser usado por administradores.
+        /// </summary>
         [HttpPut("setInfo")]
         public async Task<ActionResult> SetInfo([FromBody] UserInfo userInfoRequest)
         {
@@ -50,6 +54,10 @@ namespace AtivoPlus.Controllers
             return result;
         }
 
+        /// <summary>
+        /// Utiliza -1 para indicar o utilizador atualmente autenticado.  
+        /// Qualquer outro ID só pode ser usado por administradores.
+        /// </summary>
         [HttpGet("getInfo")]
         public async Task<ActionResult<UserInfo>> GetInfo([FromQuery] int id = -1)
         {

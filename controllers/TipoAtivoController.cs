@@ -31,6 +31,10 @@ namespace AtivoPlus.Controllers
             db = context;
         }
 
+        /// <summary>
+        /// Adiciona um novo tipo de ativo.
+        /// only admin can add
+        /// </summary>
         [HttpPut("adicionarTipoAtivo")]
         public async Task<ActionResult> AdicionarTipoAtivo([FromBody] TipoAtivoRequest tipoAtivoRequest)
         {
@@ -49,7 +53,10 @@ namespace AtivoPlus.Controllers
             return await TipoAtivoLogic.AdicionarTipoAtivo(db, tipoAtivoModel, username);
         }
 
-
+        /// <summary>
+        /// Altera o nome de um tipo de ativo.
+        /// only admin can change
+        /// </summary>
         [HttpPost("alterarTipoAtivo")]
         public async Task<ActionResult> AlterarTipoAtivo([FromBody] TipoAtivoRequestChangeName tipoAtivo)
         {
@@ -61,6 +68,10 @@ namespace AtivoPlus.Controllers
             return await TipoAtivoLogic.AlterarTipoAtivo(db, tipoAtivo, username);
         }
 
+        /// <summary>
+        /// Apaga um tipo de ativo.
+        /// only admin can delete
+        /// </summary>
         [HttpDelete("apagar")]
         public async Task<ActionResult> ApagarTipoAtivo([FromBody] int tipoAtivoId)
         {
@@ -73,7 +84,10 @@ namespace AtivoPlus.Controllers
             return await TipoAtivoLogic.ApagarTipoAtivo(db, tipoAtivoId, username);
         }
 
-
+        /// <summary>
+        /// Ver todos os tipos de ativo.
+        /// </summary>
+        /// <returns>Lista de tipos de ativo</returns>
         [HttpGet("ver")]
         public async Task<ActionResult<List<TipoAtivo>>> VerTiposAtivo()
         {
