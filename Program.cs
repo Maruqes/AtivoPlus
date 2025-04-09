@@ -9,6 +9,15 @@ using DotNetEnv;
 using System.Reflection;
 
 
+async void init()
+{
+    //check if there are the 3 types of ativos we have
+    var db_ativo = AppDbContext.GetDb();
+    await db_ativo.AddTipoAtivoIfDoesNotExist("fundo_investimento");
+    await db_ativo.AddTipoAtivoIfDoesNotExist("imovel_arrendado");
+    await db_ativo.AddTipoAtivoIfDoesNotExist("deposito_prazo");
+
+}
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -85,6 +94,7 @@ if (string.IsNullOrEmpty(apiKey))
 }
 TwelveDataLogic.StartTwelveDataLogic(apiKey);
 
+init();
 
 app.UseStaticFiles();
 app.UseRouting();
