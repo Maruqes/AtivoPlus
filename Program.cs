@@ -17,6 +17,8 @@ async void init()
     await db_ativo.AddTipoAtivoIfDoesNotExist("imovel_arrendado");
     await db_ativo.AddTipoAtivoIfDoesNotExist("deposito_prazo");
 
+    //popular db com candles dos principais ativos
+
 }
 
 
@@ -36,6 +38,17 @@ builder.Services.AddSwaggerGen(options =>
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+         policy.AllowAnyOrigin()    // Permite qualquer origem ("*")
+               .AllowAnyMethod()    // Permite qualquer método HTTP (GET, POST, etc.)
+               .AllowAnyHeader();   // Permite qualquer header
+    });
+});
+
 
 
 var app = builder.Build();
