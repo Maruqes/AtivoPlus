@@ -24,30 +24,35 @@ namespace AtivoPlus.Logic
                 db.SaveChanges();
             }
         }
-
         public static string GetCookie(HttpRequest Request, string key)
         {
             var ret = Request.Cookies[key];
-            if (ret == null)
-            {
-                return string.Empty;
-            }
-            return ret;
+            return ret ?? string.Empty;
         }
 
         public static void SetCookie(HttpResponse Response, string key, string value)
         {
-            CookieOptions cookie = new CookieOptions();
-            cookie.Expires = System.DateTime.Now.AddDays(7);
-            cookie.HttpOnly = true;
+            CookieOptions cookie = new CookieOptions
+            {
+                Expires = DateTime.Now.AddDays(7),
+                HttpOnly = true,
+                SameSite = SameSiteMode.None,
+                Secure = false
+            };
+
             Response.Cookies.Append(key, value, cookie);
         }
 
         public static void SetCookie(HttpResponse Response, string key, string value, bool httpOnly, int expireDays)
         {
-            CookieOptions cookie = new CookieOptions();
-            cookie.Expires = System.DateTime.Now.AddDays(expireDays);
-            cookie.HttpOnly = httpOnly;
+            CookieOptions cookie = new CookieOptions
+            {
+                Expires = DateTime.Now.AddDays(expireDays),
+                HttpOnly = httpOnly,
+                SameSite = SameSiteMode.None,
+                Secure = false
+            };
+
             Response.Cookies.Append(key, value, cookie);
         }
 

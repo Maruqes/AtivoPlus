@@ -41,14 +41,19 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("PermitirOrigens", policy =>
     {
-        policy.AllowAnyOrigin()    // Permite qualquer origem ("*")
-              .AllowAnyMethod()    // Permite qualquer método HTTP (GET, POST, etc.)
-              .AllowAnyHeader()   // Permite qualquer header
-            .AllowCredentials(); // <- isto é ESSENCIAL
+        policy.WithOrigins(
+            "http://localhost:5299",
+            "https://es.marquesserver.freeddns.org",
+            "https://esfront.marquesserver.freeddns.org"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials(); // <- essencial para permitir cookies
     });
 });
+
 
 
 
@@ -59,8 +64,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseCors("AllowAll");
 }
+app.UseCors("PermitirOrigens");
 
 
 //test 
