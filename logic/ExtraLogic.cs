@@ -37,8 +37,8 @@ namespace AtivoPlus.Logic
             {
                 Expires = DateTime.Now.AddDays(7),
                 HttpOnly = true,
-                SameSite = SameSiteMode.Lax, // temporariamente usa Lax
-                Secure = false // temporariamente false
+                SameSite = SameSiteMode.None,
+                Secure = true // mesmo em dev, se estiveres a fazer chamadas cross-origin
             };
 
             context.Response.Cookies.Append(key, value, cookie);
