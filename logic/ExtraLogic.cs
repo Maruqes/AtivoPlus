@@ -38,7 +38,7 @@ namespace AtivoPlus.Logic
                 Expires = DateTime.Now.AddDays(7),
                 HttpOnly = true,
                 SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None,
-                Secure = !isDev
+                Secure = true // mesmo em dev, se estiveres a fazer chamadas cross-origin
             };
 
             context.Response.Cookies.Append(key, value, cookie);
@@ -47,18 +47,18 @@ namespace AtivoPlus.Logic
 
         public static void SetCookie(HttpContext context, string key, string value, bool httpOnly = true, int expireDays = 7)
         {
-            var isDev = context.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment();
-
-            var options = new CookieOptions
+            // ⚠️ SEMPRE usar SameSite=None e Secure=true para funcionar em cross-site (com credentials: 'include')
+            var cookie = new CookieOptions
             {
                 Expires = DateTime.Now.AddDays(expireDays),
                 HttpOnly = httpOnly,
-                Secure = !isDev, // apenas mete Secure em produção
-                SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None // Lax no dev, None em produção
+                SameSite = SameSiteMode.None,
+                Secure = true // mesmo em dev, se estiveres a fazer chamadas cross-origin
             };
 
-            context.Response.Cookies.Append(key, value, options);
+            context.Response.Cookies.Append(key, value, cookie);
         }
+
 
 
         /// <summary>
