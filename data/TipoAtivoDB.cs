@@ -56,6 +56,16 @@ namespace AtivoPlus.Data
             return await TiposAtivo.ToListAsync();
         }
 
+        public async Task<bool> AddTipoAtivoIfDoesNotExist(string nome)
+        {
+            if (await TiposAtivo.AnyAsync(t => t.Nome == nome))
+            {
+                return false; // TipoAtivo já existe
+            }
+
+            await CreateTipoAtivo(nome);
+            return true; // TipoAtivo criado com sucesso
+        }
 
     }
 }

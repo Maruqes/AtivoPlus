@@ -6,8 +6,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using DotNetEnv;
+using System.Reflection;
 
 
+async void init()
+{
+    //check if there are the 3 types of ativos we have
+    var db_ativo = AppDbContext.GetDb();
+    await db_ativo.AddTipoAtivoIfDoesNotExist("fundo_investimento");
+    await db_ativo.AddTipoAtivoIfDoesNotExist("imovel_arrendado");
+    await db_ativo.AddTipoAtivoIfDoesNotExist("deposito_prazo");
+
+}
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +31,12 @@ builder.Services.AddControllers(); // Adiciona suporte para Web API
 
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
+
 
 var app = builder.Build();
 
@@ -31,7 +46,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 
 //test 
 
@@ -80,6 +94,7 @@ if (string.IsNullOrEmpty(apiKey))
 }
 TwelveDataLogic.StartTwelveDataLogic(apiKey);
 
+init();
 
 app.UseStaticFiles();
 app.UseRouting();

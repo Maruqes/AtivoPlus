@@ -90,6 +90,10 @@ namespace AtivoPlus.Controllers
             public string PermissionName { get; set; } = string.Empty;
         }
 
+        /// <summary>
+        /// Adds a permission to a user.
+        /// ONLY admin can do this.
+        /// </summary>
         [HttpPut("addUserPermission")]
         public async Task<ActionResult<User>> AddUserPermission([FromBody] PermsUser userPermission)
         {
@@ -118,6 +122,10 @@ namespace AtivoPlus.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Deletes a permission from a user.
+        /// ONLY admin can do this.
+        /// </summary>
         [HttpDelete("deleteUserPermission")]
         public async Task<ActionResult<User>> DeleteUserPermission([FromBody] PermsUser userPermission)
         {

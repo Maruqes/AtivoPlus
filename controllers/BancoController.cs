@@ -7,19 +7,19 @@ using AtivoPlus.Logic;
 //ou app a usar api ou da par por razor em cima desta merda
 
 namespace AtivoPlus.Controllers
-{  
+{
     public class BancoRequest
-    {   
-        public string Nome { get ; set; } = string.Empty;
+    {
+        public string Nome { get; set; } = string.Empty;
     }
 
     public class BancoRequestChangeName
-    {   
+    {
         public int bancoId { get; set; }
-        public string Nome { get ; set; } = string.Empty;
+        public string Nome { get; set; } = string.Empty;
     }
 
-   
+
     [Route("api/banco")] // A API está definida em "api/user"
     [ApiController] // Indica que este é um Controller de API
     public class BancoController : ControllerBase
@@ -31,6 +31,10 @@ namespace AtivoPlus.Controllers
             db = context;
         }
 
+        /// <summary>
+        /// Adiciona um novo banco.
+        /// only admin can add
+        /// </summary>
         [HttpPut("adicionar")]
         public async Task<ActionResult> AdicionarBanco([FromBody] BancoRequest banco)
         {
@@ -39,12 +43,15 @@ namespace AtivoPlus.Controllers
             {
                 return Unauthorized();
             }
-            
+
             return await BancoLogic.AdicionarBanco(db, banco, username);
         }
 
-
-         [HttpPost("alterarBanco")]
+        /// <summary>
+        /// Altera o nome de um banco.
+        /// only admin can change
+        /// </summary>
+        [HttpPost("alterarBanco")]
         public async Task<ActionResult> AlterarBanco([FromBody] BancoRequestChangeName banco)
         {
             string username = UserLogic.CheckUserLoggedRequest(Request);
@@ -54,7 +61,10 @@ namespace AtivoPlus.Controllers
             }
             return await BancoLogic.AlterarBanco(db, banco, username);
         }
-
+        /// <summary>
+        /// Apaga um banco.
+        /// only admin can delete
+        /// </summary>
         [HttpDelete("apagar")]
         public async Task<ActionResult> ApagarBanco([FromBody] int bancoId)
         {
@@ -67,7 +77,10 @@ namespace AtivoPlus.Controllers
             return await BancoLogic.ApagarBanco(db, bancoId, username);
         }
 
-
+        /// <summary>
+        /// Ver todos os bancos.
+        /// Qualquer utilizador pode ver os bancos.
+        /// </summary>  
         [HttpGet("ver")]
         public async Task<ActionResult<List<Banco>>> VerBancos()
         {
@@ -78,6 +91,6 @@ namespace AtivoPlus.Controllers
             }
             return Ok(await BancoLogic.GetBancos(db));
         }
-       
+
     }
 }
