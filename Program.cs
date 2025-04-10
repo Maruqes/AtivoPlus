@@ -38,19 +38,18 @@ builder.Services.AddSwaggerGen(options =>
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
-
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("PermitirOrigens", policy =>
+    options.AddPolicy("PermitirFrontend", policy =>
     {
         policy.WithOrigins(
-            "http://localhost:5299",
-            "https://es.marquesserver.freeddns.org",
-            "https://esfront.marquesserver.freeddns.org"
+            "https://localhost:5299", 
+            "https://es.marquesserver.freeddns.org:10513",
+            "https://esfront.marquesserver.freeddns.org:10513"
         )
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .AllowCredentials(); // <- essencial para permitir cookies
+        .AllowCredentials();
     });
 });
 
@@ -65,8 +64,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors("PermitirOrigens");
-
+app.UseCors("PermitirFrontend");
 
 //test 
 
