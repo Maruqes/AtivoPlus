@@ -43,7 +43,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("PermitirFrontend", policy =>
     {
         policy.WithOrigins(
-            "https://localhost:5299", 
+            "https://localhost:5299",
             "https://es.marquesserver.freeddns.org:10513",
             "https://esfront.marquesserver.freeddns.org:10513"
         )
@@ -64,6 +64,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.None
+});
+
 app.UseCors("PermitirFrontend");
 
 //test 
