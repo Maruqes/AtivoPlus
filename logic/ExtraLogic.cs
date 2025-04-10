@@ -37,7 +37,7 @@ namespace AtivoPlus.Logic
             {
                 Expires = DateTime.Now.AddDays(7),
                 HttpOnly = true,
-                SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None,
+                SameSite = SameSiteMode.None,
                 Secure = true // mesmo em dev, se estiveres a fazer chamadas cross-origin
             };
 
