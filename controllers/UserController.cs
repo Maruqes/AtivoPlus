@@ -52,8 +52,8 @@ namespace AtivoPlus.Controllers
                 return BadRequest();
             }
 
-            ExtraLogic.SetCookie(Response, "username", request.Username);
-            ExtraLogic.SetCookie(Response, "token", userToken);
+            ExtraLogic.SetCookie(HttpContext, "username", request.Username);
+            ExtraLogic.SetCookie(HttpContext, "token", userToken);
 
             return Ok();
         }
@@ -69,8 +69,8 @@ namespace AtivoPlus.Controllers
 
             UserLogic.LogoutUser(Username, UserLogic.GetTokenWithRequest(Request));
 
-            ExtraLogic.SetCookie(Response, "username", string.Empty);
-            ExtraLogic.SetCookie(Response, "token", string.Empty);
+            ExtraLogic.SetCookie(HttpContext, "username", string.Empty);
+            ExtraLogic.SetCookie(HttpContext, "token", string.Empty);
 
             return Ok();
         }
