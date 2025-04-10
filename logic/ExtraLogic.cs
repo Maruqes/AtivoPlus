@@ -24,37 +24,42 @@ namespace AtivoPlus.Logic
                 db.SaveChanges();
             }
         }
-        public static string GetCookie(HttpRequest Request, string key)
+        public static string GetCookie(HttpRequest request, string key)
         {
-            var ret = Request.Cookies[key];
-            return ret ?? string.Empty;
+            return request.Cookies[key] ?? string.Empty;
         }
 
-        public static void SetCookie(HttpResponse Response, string key, string value)
+        public static void SetCookie(HttpContext context, string key, string value)
         {
-            CookieOptions cookie = new CookieOptions
+            var isDev = context.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment();
+
+            var cookie = new CookieOptions
             {
                 Expires = DateTime.Now.AddDays(7),
                 HttpOnly = true,
-                SameSite = SameSiteMode.None,
-                Secure = false
+                SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None,
+                Secure = !isDev
             };
 
-            Response.Cookies.Append(key, value, cookie);
+            context.Response.Cookies.Append(key, value, cookie);
         }
 
-        public static void SetCookie(HttpResponse Response, string key, string value, bool httpOnly, int expireDays)
+
+        public static void SetCookie(HttpContext context, string key, string value, bool httpOnly = true, int expireDays = 7)
         {
-            CookieOptions cookie = new CookieOptions
+            var isDev = context.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment();
+
+            var options = new CookieOptions
             {
                 Expires = DateTime.Now.AddDays(expireDays),
                 HttpOnly = httpOnly,
-                SameSite = SameSiteMode.None,
-                Secure = false
+                Secure = !isDev, // apenas mete Secure em produção
+                SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None // Lax no dev, None em produção
             };
 
-            Response.Cookies.Append(key, value, cookie);
+            context.Response.Cookies.Append(key, value, options);
         }
+
 
         /// <summary>
         /// uma rotina que corre todos os dias para remover logins antigos
