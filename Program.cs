@@ -43,9 +43,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-         policy.AllowAnyOrigin()    // Permite qualquer origem ("*")
-               .AllowAnyMethod()    // Permite qualquer método HTTP (GET, POST, etc.)
-               .AllowAnyHeader();   // Permite qualquer header
+        policy.AllowAnyOrigin()    // Permite qualquer origem ("*")
+              .AllowAnyMethod()    // Permite qualquer método HTTP (GET, POST, etc.)
+              .AllowAnyHeader()   // Permite qualquer header
+            .AllowCredentials(); // <- isto é ESSENCIAL
     });
 });
 
@@ -58,8 +59,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("AllowAll");
 }
-app.UseCors("AllowAll");
 
 
 //test 
