@@ -21,8 +21,8 @@ namespace AtivoPlus.Controllers
 
     public class UserInfoWithMoradaRequest
     {
-        public UserInfo UserInfoRequest { get; set; }
-        public MoradaRequest MoradaRequest { get; set; }
+        public UserInfo? UserInfoRequest { get; set; }
+        public MoradaRequest? MoradaRequest { get; set; }
     }
 
 
@@ -67,12 +67,14 @@ namespace AtivoPlus.Controllers
             {
                 return Unauthorized();
             }
-            UserInfo userInfoRequest = userInfoWithMoradaRequest.UserInfoRequest;
-            MoradaRequest moradaRequest = userInfoWithMoradaRequest.MoradaRequest;
-            if (userInfoRequest == null || moradaRequest == null)
+
+            if (userInfoWithMoradaRequest.UserInfoRequest == null || userInfoWithMoradaRequest.MoradaRequest == null)
             {
                 return BadRequest("Invalid request");
             }
+
+            UserInfo userInfoRequest = userInfoWithMoradaRequest.UserInfoRequest!;
+            MoradaRequest moradaRequest = userInfoWithMoradaRequest.MoradaRequest!;
 
             ActionResult result = await UserInfoLogic.SetUserInfo(db, username, userInfoRequest, moradaRequest);
 
@@ -84,7 +86,7 @@ namespace AtivoPlus.Controllers
         /// Qualquer outro ID só pode ser usado por administradores.
         /// </summary>
         [HttpGet("getInfo")]
-        public async Task<ActionResult<UserInfo>> GetInfo([FromQuery] int id = -1)
+        public async Task<ActionResult<UserInfoWithMoradaRequest>> GetInfo([FromQuery] int id = -1)
         {
             string username = UserLogic.CheckUserLoggedRequest(Request);
             if (string.IsNullOrEmpty(username))
@@ -98,7 +100,27 @@ namespace AtivoPlus.Controllers
                 return NotFound();
             }
 
-            return Ok(userInfo);
+            Morada? morada = await db.GetMoradasByUserId(userInfo.Id);
+            if (morada == null)
+            {
+                return NotFound();
+            }
+
+            UserInfoWithMoradaRequest userInfoWithMorada = new UserInfoWithMoradaRequest
+            {
+                UserInfoRequest = userInfo,
+                MoradaRequest = new MoradaRequest
+                {
+                    Rua = morada.Rua,
+                    Piso = morada.Piso,
+                    NumeroPorta = morada.NumeroPorta,
+                    Concelho = morada.Concelho,
+                    Distrito = morada.Distrito,
+                    Localidade = morada.Localidade,
+                    CodPostal = morada.CodPostal
+                }
+            };
+            return Ok(userInfoWithMorada);
         }
     }
 }

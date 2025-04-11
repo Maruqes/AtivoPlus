@@ -97,7 +97,7 @@ namespace AtivoPlus.Tests
 
             // ASSERT
             // Verifica a informação de "admin"
-            UserInfo adminInfo = await UserInfoLogic.GetUserInfo(db, "admin");
+            UserInfo? adminInfo = await UserInfoLogic.GetUserInfo(db, "admin");
             Assert.NotNull(adminInfo);
             Assert.Equal("admin", adminInfo.Nome);
             Assert.Equal("123456789", adminInfo.Telefone);
@@ -117,11 +117,11 @@ namespace AtivoPlus.Tests
             Assert.Equal(adminInfo.Id, adminMorada.User_id);
 
             // Verificar os nomes dos restantes utilizadores
-            UserInfo t1Info = await UserInfoLogic.GetUserInfo(db, "t1");
+            UserInfo? t1Info = await UserInfoLogic.GetUserInfo(db, "t1");
             Assert.NotNull(t1Info);
             Assert.Equal("t1", t1Info.Nome);
 
-            UserInfo t2Info = await UserInfoLogic.GetUserInfo(db, "t2");
+            UserInfo? t2Info = await UserInfoLogic.GetUserInfo(db, "t2");
             Assert.NotNull(t2Info);
             Assert.Equal("t2", t2Info.Nome);
         }

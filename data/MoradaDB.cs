@@ -18,7 +18,7 @@ namespace AtivoPlus.Data
                 return -1;
             }
 
-            Morada morada = null;
+            Morada? morada = null;
 
             var old_morada = await Moradas.FirstOrDefaultAsync(m => m.User_id == userId);
             if (old_morada == null)
