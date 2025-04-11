@@ -8,6 +8,24 @@ using AtivoPlus.Logic;
 
 namespace AtivoPlus.Controllers
 {
+    public class MoradaRequest
+    {
+        public string Rua { get; set; } = string.Empty;
+        public string Piso { get; set; } = string.Empty;
+        public string NumeroPorta { get; set; } = string.Empty;
+        public string Concelho { get; set; } = string.Empty;
+        public string Distrito { get; set; } = string.Empty;
+        public string Localidade { get; set; } = string.Empty;
+        public string CodPostal { get; set; } = string.Empty;
+    }
+
+    public class UserInfoWithMoradaRequest
+    {
+        public UserInfo UserInfoRequest { get; set; }
+        public MoradaRequest MoradaRequest { get; set; }
+    }
+
+
     [Route("api/userinfo")] // A API está definida em "api/user"
     [ApiController] // Indica que este é um Controller de API
     public class UserInfoController : ControllerBase
@@ -38,9 +56,10 @@ namespace AtivoPlus.Controllers
         /// <summary>
         /// Utiliza -1 para indicar o utilizador atualmente autenticado.  
         /// Qualquer outro ID só pode ser usado por administradores.
+        /// morada_id leave empty, or 0
         /// </summary>
         [HttpPut("setInfo")]
-        public async Task<ActionResult> SetInfo([FromBody] UserInfo userInfoRequest)
+        public async Task<ActionResult> SetInfo([FromBody] UserInfoWithMoradaRequest userInfoWithMoradaRequest)
         {
             // se for o próprio utilizador ou admin pode alterar
             string username = UserLogic.CheckUserLoggedRequest(Request);
@@ -48,8 +67,14 @@ namespace AtivoPlus.Controllers
             {
                 return Unauthorized();
             }
+            UserInfo userInfoRequest = userInfoWithMoradaRequest.UserInfoRequest;
+            MoradaRequest moradaRequest = userInfoWithMoradaRequest.MoradaRequest;
+            if (userInfoRequest == null || moradaRequest == null)
+            {
+                return BadRequest("Invalid request");
+            }
 
-            ActionResult result = await UserInfoLogic.SetUserInfo(db, username, userInfoRequest);
+            ActionResult result = await UserInfoLogic.SetUserInfo(db, username, userInfoRequest, moradaRequest);
 
             return result;
         }
@@ -66,7 +91,7 @@ namespace AtivoPlus.Controllers
             {
                 return Unauthorized();
             }
-            
+
             UserInfo? userInfo = await UserInfoLogic.GetUserInfo(db, username, id);
             if (userInfo == null)
             {

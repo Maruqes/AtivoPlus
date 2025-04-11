@@ -1,4 +1,5 @@
 using AtivoPlus.Models;
+using AtivoPlus.Controllers;
 using AtivoPlus.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -6,20 +7,24 @@ namespace AtivoPlus.Logic
 {
     class UserInfoLogic
     {
-        public async static Task<ActionResult> SetUserInfo(AppDbContext db, string Username, UserInfo userInfoRequest)
+        public static async Task<int> CreateMorada(AppDbContext db, MoradaRequest moradaRequest, int userId)
+        {
+            return await db.CreateMorada(userId, moradaRequest.Rua, moradaRequest.Piso, moradaRequest.NumeroPorta, moradaRequest.Concelho, moradaRequest.Distrito, moradaRequest.Localidade, moradaRequest.CodPostal);
+        }
+
+        public async static Task<ActionResult> SetUserInfo(AppDbContext db, string Username, UserInfo userInfoRequest, MoradaRequest moradaRequest)
         {
             //se for -1, é o proprio utilizador, ou seja setamos o final_id para o id do utilizador
             //se for um id, DEVE ser um admin, confirmamos, se for, setamos o final_id para o id do utilizador
             int? final_id = null;
+            int? userId = await UserLogic.GetUserID(db, Username);
+            if (userId == null)
+            {
+                return new UnauthorizedObjectResult("User not found");
+            }
 
             if (userInfoRequest.Id == -1)
             {
-                //é o proprio utilizador
-                int? userId = await UserLogic.GetUserID(db, Username);
-                if (userId == null)
-                {
-                    return new UnauthorizedObjectResult("User not found");
-                }
                 final_id = userId;
             }
             else
@@ -37,7 +42,13 @@ namespace AtivoPlus.Logic
                 return new NotFoundObjectResult("User not found");
             }
 
-            bool res = await db.SetUserInfo(final_id.Value, userInfoRequest.Nome, userInfoRequest.Email, userInfoRequest.Telefone, userInfoRequest.Morada, userInfoRequest.NIF, userInfoRequest.IBAN);
+            int? morada_id = await CreateMorada(db, moradaRequest, final_id.Value);
+            if (morada_id == -1 || morada_id == null)
+            {
+                return new NotFoundObjectResult("User not found");
+            }
+
+            bool res = await db.SetUserInfo(final_id.Value, userInfoRequest.Nome, userInfoRequest.Email, userInfoRequest.Telefone, morada_id.Value, userInfoRequest.NIF, userInfoRequest.IBAN);
             if (res)
             {
                 return new OkResult(); // 200 OK

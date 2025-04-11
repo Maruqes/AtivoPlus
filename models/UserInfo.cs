@@ -11,7 +11,7 @@ namespace AtivoPlus.Models
         public string Nome { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Telefone { get; set; } = string.Empty;
-        public string Morada { get; set; } = string.Empty;
+        public int Morada_id { get; set; }
         public string NIF { get; set; } = string.Empty;
         public DateTime DateTime { get; set; } = DateTime.Now;
         public string IBAN { get; set; } = string.Empty;
