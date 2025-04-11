@@ -8,9 +8,10 @@ namespace AtivoPlus.Models
     public class Morada
     {
         [Key]
-        public int Id { get; set; }        
+        public int Id { get; set; }
+        public int User_id { get; set; }
         public string Rua { get; set; } = string.Empty;
-        public string Piso { get ; set; } = string.Empty;
+        public string Piso { get; set; } = string.Empty;
         public string NumeroPorta { get; set; } = string.Empty;
         public string Concelho { get; set; } = string.Empty;
         public string Distrito { get; set; } = string.Empty;

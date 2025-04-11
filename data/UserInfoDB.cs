@@ -10,7 +10,7 @@ namespace AtivoPlus.Data
     {
         public DbSet<UserInfo> UsersInfo { get; set; }
 
-        public async Task<bool> SetUserInfo(int id, string nome, string email, string telefone, string morada, string nif, string iban)
+        public async Task<bool> SetUserInfo(int id, string nome, string email, string telefone, int morada_id, string nif, string iban)
         {
             if (await UserLogic.CheckIfUserExistsById(this, id) == false)
             {
@@ -26,7 +26,7 @@ namespace AtivoPlus.Data
                     Nome = nome,
                     Email = email,
                     Telefone = telefone,
-                    Morada = morada,
+                    Morada_id = morada_id,
                     NIF = nif,
                     IBAN = iban,
                     DateTime = DateTime.UtcNow
@@ -39,7 +39,7 @@ namespace AtivoPlus.Data
                 userInfo.Nome = nome;
                 userInfo.Email = email;
                 userInfo.Telefone = telefone;
-                userInfo.Morada = morada;
+                userInfo.Morada_id = morada_id;
                 userInfo.NIF = nif;
                 userInfo.IBAN = iban;
                 userInfo.DateTime = DateTime.UtcNow;
