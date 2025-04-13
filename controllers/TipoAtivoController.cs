@@ -31,10 +31,10 @@ namespace AtivoPlus.Controllers
     //     db = context;
     // }
 
-    /// <summary>
-    /// Adiciona um novo tipo de ativo.
-    /// only admin can add
-    /// </summary>
+    // /// <summary>
+    // /// Adiciona um novo tipo de ativo.
+    // /// only admin can add
+    // /// </summary>
     // [HttpPut("adicionarTipoAtivo")]
     // public async Task<ActionResult> AdicionarTipoAtivo([FromBody] TipoAtivoRequest tipoAtivoRequest)
     // {
