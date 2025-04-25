@@ -86,6 +86,17 @@ namespace AtivoPlus.Controllers
             {
                 return NotFound();
             }
+
+            AtivoFinanceiro? ativoFinanceiro = await db.GetAtivoFinanceiroById(ativoFinanceiroId);
+            if (ativoFinanceiro == null)
+            {
+                return NotFound();
+            }
+
+            if (ativoFinanceiro.UserId != (await db.GetUserByUsername(username))!.Id)
+            {
+                return Unauthorized();
+            }
             return Ok(fundo);
         }
 
@@ -102,6 +113,24 @@ namespace AtivoPlus.Controllers
             {
                 return NotFound();
             }
+
+            List<FundoInvestimento> returnFundos = new List<FundoInvestimento>();
+
+            foreach (FundoInvestimento fundo in fundos)
+            {
+                AtivoFinanceiro? ativoFinanceiro = await db.GetAtivoFinanceiroById(fundo.AtivoFinaceiroId);
+                if (ativoFinanceiro == null)
+                {
+                    return NotFound();
+                }
+
+                if (ativoFinanceiro.UserId != (await db.GetUserByUsername(username))!.Id)
+                {
+                    return Unauthorized();
+                }
+                returnFundos.Add(fundo);
+            }
+
             return Ok(fundos);
         }
 
@@ -113,7 +142,7 @@ namespace AtivoPlus.Controllers
             {
                 return Unauthorized();
             }
-          return await FundoInvestimentoLogic.DeleteFundoInvestimento(username, ativoFinanceiroId, db);
+            return await FundoInvestimentoLogic.DeleteFundoInvestimento(username, ativoFinanceiroId, db);
         }
     }
 }
