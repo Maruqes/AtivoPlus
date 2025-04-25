@@ -72,5 +72,10 @@ namespace AtivoPlus.Data
             await SaveChangesAsync();
         }
 
+        public async Task<AtivoFinanceiro?> GetAtivoFinanceiroById(int ativoFinanceiroId)
+        {
+            return await AtivoFinanceiros.FirstOrDefaultAsync(c => c.Id == ativoFinanceiroId);
+        }
+
     }
 }
