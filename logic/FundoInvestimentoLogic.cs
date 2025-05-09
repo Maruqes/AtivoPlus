@@ -10,6 +10,7 @@ namespace AtivoPlus.Logic
     {
         public static async Task<ActionResult> AdicionarFundoInvestimento(string username, FundoInvestimentoRequest fundo, AppDbContext db)
         {
+
             if (fundo == null)
             {
                 return new BadRequestObjectResult("Dados do fundo de investimento inválidos");
@@ -34,6 +35,10 @@ namespace AtivoPlus.Logic
                 id_to_compare = fundo.UserId;
             }
 
+            if (TwelveDataLogic.DoesSymbolExists(fundo.AtivoSigla) == false)
+            {
+                return new BadRequestObjectResult("Ativo não existe");
+            }
 
             AtivoFinanceiro? ativo = await db.GetAtivoFinanceiroById(fundo.AtivoFinaceiroId);
             if (ativo == null)
@@ -75,6 +80,11 @@ namespace AtivoPlus.Logic
                 id_to_compare = fundo.UserId;
             }
 
+            if (TwelveDataLogic.DoesSymbolExists(fundo.AtivoSigla) == false)
+            {
+                return new BadRequestObjectResult("Ativo não existe");
+            }
+
             FundoInvestimento? fundoInvestimento = await db.GetFundoInvestimento(fundo.FundoInvestimentoID);
             if (fundoInvestimento == null)
             {
@@ -89,7 +99,7 @@ namespace AtivoPlus.Logic
 
         public static async Task<ActionResult> DeleteFundoInvestimento(string username, int ativoFinanceiroId, AppDbContext db)
         {
-           
+
             FundoInvestimento? fundoInvestimento = await db.GetFundoInvestimento(ativoFinanceiroId);
             if (fundoInvestimento == null)
             {
@@ -110,7 +120,7 @@ namespace AtivoPlus.Logic
 
             if (user.Username != username)
             {
-                if(!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
+                if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
                 {
                     return new UnauthorizedObjectResult("User is not the owner of the wallet, trying to do something fishy?");
                 }
