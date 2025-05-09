@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using DotNetEnv;
 using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 
 async void init()
@@ -44,8 +45,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
             "https://localhost:5299",
-            "https://es.marquesserver.freeddns.org:10513",
-            "https://esfront.marquesserver.freeddns.org:10513"
+            "https://es.maruqes.com:10513",
+            "https://esfront.maruqes.com:10513"
         )
         .AllowAnyHeader()
         .AllowAnyMethod()
@@ -70,6 +71,8 @@ app.UseCookiePolicy(new CookiePolicyOptions
 });
 
 app.UseCors("PermitirFrontend");
+
+
 
 //test 
 

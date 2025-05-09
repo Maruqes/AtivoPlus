@@ -21,6 +21,7 @@ namespace AtivoPlus.Models
         public Boolean TaxaFixa { get; set; }
         public string AtivoSigla { get; set; } = string.Empty;
 
+        public DateTime DataCriacao { get; set; } = DateTime.Now;
     }
 }
 

@@ -144,5 +144,125 @@ namespace AtivoPlus.Controllers
             }
             return await FundoInvestimentoLogic.DeleteFundoInvestimento(username, ativoFinanceiroId, db);
         }
+
+        [HttpGet("getCommodities")]
+        public async Task<ActionResult> GetCommodities()
+        {
+            try
+            {
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "TwelveJson", "commodities.json");
+                if (!System.IO.File.Exists(filePath))
+                {
+                    return NotFound("Commodities data file not found.");
+                }
+
+                string jsonContent = await System.IO.File.ReadAllTextAsync(filePath);
+                return Content(jsonContent, "application/json");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error reading commodities data: {ex.Message}");
+            }
+        }
+
+        [HttpGet("getCryptos")]
+        public async Task<ActionResult> GetCrypto()
+        {
+            try
+            {
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "TwelveJson", "cryptocurrencies.json");
+                if (!System.IO.File.Exists(filePath))
+                {
+                    return NotFound("Commodities data file not found.");
+                }
+
+                string jsonContent = await System.IO.File.ReadAllTextAsync(filePath);
+                return Content(jsonContent, "application/json");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error reading commodities data: {ex.Message}");
+            }
+        }
+
+        [HttpGet("getEtfs")]
+        public async Task<ActionResult> GetEtfs()
+        {
+            try
+            {
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "TwelveJson", "etfs.json");
+                if (!System.IO.File.Exists(filePath))
+                {
+                    return NotFound("Commodities data file not found.");
+                }
+
+                string jsonContent = await System.IO.File.ReadAllTextAsync(filePath);
+                return Content(jsonContent, "application/json");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error reading commodities data: {ex.Message}");
+            }
+        }
+
+        [HttpGet("getForex")]
+        public async Task<ActionResult> GetForex()
+        {
+            try
+            {
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "TwelveJson", "forex_pairs.json");
+                if (!System.IO.File.Exists(filePath))
+                {
+                    return NotFound("Commodities data file not found.");
+                }
+
+                string jsonContent = await System.IO.File.ReadAllTextAsync(filePath);
+                return Content(jsonContent, "application/json");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error reading commodities data: {ex.Message}");
+            }
+        }
+
+        [HttpGet("getIndices")]
+        public async Task<ActionResult> GetIndices()
+        {
+            try
+            {
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "TwelveJson", "indices.json");
+                if (!System.IO.File.Exists(filePath))
+                {
+                    return NotFound("Commodities data file not found.");
+                }
+
+                string jsonContent = await System.IO.File.ReadAllTextAsync(filePath);
+                return Content(jsonContent, "application/json");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error reading commodities data: {ex.Message}");
+            }
+        }
+
+        [HttpGet("getStocks")]
+        public async Task<ActionResult> GetStocks()
+        {
+            try
+            {
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "TwelveJson", "stocks.json");
+                if (!System.IO.File.Exists(filePath))
+                {
+                    return NotFound("Commodities data file not found.");
+                }
+
+                string jsonContent = await System.IO.File.ReadAllTextAsync(filePath);
+                return Content(jsonContent, "application/json");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error reading commodities data: {ex.Message}");
+            }
+        }
     }
 }
