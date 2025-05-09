@@ -311,7 +311,7 @@ namespace AtivoPlus.Logic
                 return false;
             }
         }
-        public static List<JObject> SearchJsonFiles(string searchTerm, int numberOfResults = 10)
+        public static List<JObject> SearchJsonFiles(string searchTerm, int numberOfResults = 50)
         {
             if (string.IsNullOrWhiteSpace(searchTerm) || numberOfResults <= 0)
                 return new();

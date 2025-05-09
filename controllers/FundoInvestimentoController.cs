@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using AtivoPlus.Data;
 using AtivoPlus.Models;
 using AtivoPlus.Logic;
+using Newtonsoft.Json.Linq;
 
 //ou app a usar api ou da par por razor em cima desta merda
 
@@ -257,6 +258,26 @@ namespace AtivoPlus.Controllers
                 }
 
                 string jsonContent = await System.IO.File.ReadAllTextAsync(filePath);
+                return Content(jsonContent, "application/json");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error reading commodities data: {ex.Message}");
+            }
+        }
+
+        [HttpGet("searchTerm")]
+        public ActionResult SearchTerm(String term, int length = 50)
+        {
+            try
+            {
+                List<JObject> ret = TwelveDataLogic.SearchJsonFiles(term, length);
+                if (ret == null)
+                {
+                    return NotFound("Commodities data file not found.");
+                }
+
+                string jsonContent = Newtonsoft.Json.JsonConvert.SerializeObject(ret);
                 return Content(jsonContent, "application/json");
             }
             catch (Exception ex)
