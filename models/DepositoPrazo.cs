@@ -8,9 +8,9 @@ namespace AtivoPlus.Models
         [Key]
         public int Id { get; set; }
         [ForeignKey("AtivoFinanceiro")]
-        public int AtivoFinaceiroId { get; set; } 
+        public int AtivoFinaceiroId { get; set; }
         [ForeignKey("TipoAtivo")]
-        public int TipoAtivoId { get; set; } 
+        public int TipoAtivoId { get; set; }
         [ForeignKey("Banco")]
         public int BancoId { get; set; }
         [ForeignKey("User")]
@@ -20,6 +20,8 @@ namespace AtivoPlus.Models
         public Decimal ValorAtual { get; set; }
         public Decimal ValorInvestido { get; set; }
         public Decimal ValorAnualDespesasEstimadas { get; set; }
+
+        public DateTime DataCriacao { get; set; } = DateTime.Now;
     }
 }
 
