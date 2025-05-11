@@ -48,7 +48,6 @@ namespace AtivoPlus.Tests
                 CarteiraId = user2Wallets[0].Id,
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
-                EntidadeAtivoId = 1,
                 TaxaImposto = 0.1f
             }, "user1");
 
@@ -83,7 +82,6 @@ namespace AtivoPlus.Tests
                 CarteiraId = user2Wallets[0].Id,
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
-                EntidadeAtivoId = 1,
                 TaxaImposto = 0.1f
             }, "admin");
             Assert.IsType<OkResult>(addResult);
@@ -126,7 +124,6 @@ namespace AtivoPlus.Tests
                 CarteiraId = user2Wallets[0].Id,
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
-                EntidadeAtivoId = 1,
                 TaxaImposto = 0.1f
             }, "admin");
             Assert.IsType<OkResult>(addResult);
@@ -172,7 +169,6 @@ namespace AtivoPlus.Tests
                 CarteiraId = user1Wallets[0].Id,
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
-                EntidadeAtivoId = 1,
                 TaxaImposto = 0.1f
             }, "user1");
             Assert.IsType<OkResult>(result);
@@ -206,7 +202,6 @@ namespace AtivoPlus.Tests
                 CarteiraId = user1Wallets[0].Id,
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
-                EntidadeAtivoId = 1,
                 TaxaImposto = 0.1f
             }, "admin");
             Assert.IsType<OkResult>(result);
@@ -238,7 +233,6 @@ namespace AtivoPlus.Tests
                 CarteiraId = user1Wallets[0].Id,
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
-                EntidadeAtivoId = 1,
                 TaxaImposto = 0.1f
             }, "user1");
             Assert.IsType<OkResult>(addResult);
@@ -280,7 +274,6 @@ namespace AtivoPlus.Tests
                 CarteiraId = user1Wallets[0].Id,
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
-                EntidadeAtivoId = 1,
                 TaxaImposto = 0.1f
             }, "admin");
             Assert.IsType<OkResult>(addResult);
@@ -323,7 +316,6 @@ namespace AtivoPlus.Tests
                 CarteiraId = user1Wallets[0].Id,
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
-                EntidadeAtivoId = 1,
                 TaxaImposto = 0.1f
             }, "user1");
             Assert.IsType<OkResult>(addResult);
@@ -373,7 +365,6 @@ namespace AtivoPlus.Tests
                 CarteiraId = user1Wallets[0].Id,
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
-                EntidadeAtivoId = 1,
                 TaxaImposto = 0.1f
             }, "admin");
             Assert.IsType<OkResult>(addResult);

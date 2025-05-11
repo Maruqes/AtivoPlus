@@ -10,8 +10,6 @@ namespace AtivoPlus.Models
         public int Id { get; set; }
         [ForeignKey("User")]
         public int UserId { get; set; }
-        [ForeignKey("EntidadeAtivo")]
-        public int EntidadeAtivoId { get; set; }
         [ForeignKey("Carteira")]
 
         public string Nome { get; set; } = string.Empty;

@@ -12,7 +12,7 @@ namespace AtivoPlus.Data
 
 
 
-        public async Task<bool> CreateAtivoFinanceiro(int userId, int entidadeAtivoId, string nome, int carteiraId, DateTime dataInicio, int duracaoMeses, float taxaImposto)
+        public async Task<bool> CreateAtivoFinanceiro(int userId, string nome, int carteiraId, DateTime dataInicio, int duracaoMeses, float taxaImposto)
         {
             if (await UserLogic.CheckIfUserExistsById(this, userId) == false)
             {
@@ -23,7 +23,6 @@ namespace AtivoPlus.Data
             AtivoFinanceiro ativoFinanceiro = new AtivoFinanceiro
             {
                 UserId = userId,
-                EntidadeAtivoId = entidadeAtivoId,
                 CarteiraId = carteiraId,
                 DataInicio = dataInicio,
                 DuracaoMeses = duracaoMeses,

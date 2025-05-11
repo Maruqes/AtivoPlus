@@ -84,7 +84,7 @@ namespace AtivoPlus.Logic
             List<AtivoFinanceiro> ativosIds = await CanCarteiraBeDeleted(db, carteiraId);
             if (ativosIds.Count > 0)
             {
-                return new BadRequestObjectResult("Carteira cannot be deleted because it contains ativos with IDs: " + string.Join(", ", ativosIds.Select(a => a.Nome)));
+                return new BadRequestObjectResult("Carteira cannot be deleted because it contains ativos with name: " + string.Join(", ", ativosIds.Select(a => a.Nome)));
             }
 
             await db.DeleteCarteira(carteiraId);
