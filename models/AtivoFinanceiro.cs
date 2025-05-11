@@ -9,12 +9,14 @@ namespace AtivoPlus.Models
         [Key]
         public int Id { get; set; }
         [ForeignKey("User")]
-        public int UserId { get; set; } 
+        public int UserId { get; set; }
         [ForeignKey("EntidadeAtivo")]
-        public int EntidadeAtivoId {get; set;}
+        public int EntidadeAtivoId { get; set; }
         [ForeignKey("Carteira")]
+
+        public string Nome { get; set; } = string.Empty;
         public int CarteiraId { get; set; }
-        public DateTime DataInicio { get; set; } 
+        public DateTime DataInicio { get; set; }
         public int DuracaoMeses { get; set; }
         public float TaxaImposto { get; set; }
     }

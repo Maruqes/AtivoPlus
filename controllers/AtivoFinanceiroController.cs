@@ -31,6 +31,9 @@ namespace AtivoPlus.Controllers
         /// </summary>
         public int CarteiraId { get; set; }
 
+        public string Nome { get; set; } = string.Empty;
+
+
         /// <summary>
         /// Data de início do investimento.
         /// </summary>
@@ -63,6 +66,9 @@ namespace AtivoPlus.Controllers
         /// ID da nova carteira onde o ativo será movido.
         /// </summary>
         public int CarteiraId { get; set; }
+
+        public string Nome { get; set; } = string.Empty;
+
     }
 
 

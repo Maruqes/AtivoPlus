@@ -67,7 +67,7 @@ namespace AtivoPlus.Logic
                     return new UnauthorizedObjectResult("User is not the owner of the wallet, trying to do something fishy?");
                 }
 
-                await db.CreateAtivoFinanceiro(userId.Value, ativoFinanceiro.EntidadeAtivoId, ativoFinanceiro.CarteiraId, ativoFinanceiro.DataInicio, ativoFinanceiro.DuracaoMeses, ativoFinanceiro.TaxaImposto);
+                await db.CreateAtivoFinanceiro(userId.Value, ativoFinanceiro.EntidadeAtivoId, ativoFinanceiro.Nome, ativoFinanceiro.CarteiraId, ativoFinanceiro.DataInicio, ativoFinanceiro.DuracaoMeses, ativoFinanceiro.TaxaImposto);
             }
             else
             {
@@ -79,7 +79,7 @@ namespace AtivoPlus.Logic
                 {
                     return new UnauthorizedObjectResult("User is not the owner of the wallet, trying to do something fishy?");
                 }
-                await db.CreateAtivoFinanceiro(ativoFinanceiro.UserId, ativoFinanceiro.EntidadeAtivoId, ativoFinanceiro.CarteiraId, ativoFinanceiro.DataInicio, ativoFinanceiro.DuracaoMeses, ativoFinanceiro.TaxaImposto);
+                await db.CreateAtivoFinanceiro(ativoFinanceiro.UserId, ativoFinanceiro.EntidadeAtivoId, ativoFinanceiro.Nome, ativoFinanceiro.CarteiraId, ativoFinanceiro.DataInicio, ativoFinanceiro.DuracaoMeses, ativoFinanceiro.TaxaImposto);
 
 
             }
