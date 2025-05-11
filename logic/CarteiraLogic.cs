@@ -58,6 +58,11 @@ namespace AtivoPlus.Logic
             return new OkResult();
         }
 
+        public static async Task<List<AtivoFinanceiro>> CanCarteiraBeDeleted(AppDbContext db, int carteiraId)
+        {
+            List<AtivoFinanceiro> ativos = await db.GetAtivosByCarteiraId(carteiraId);
+            return ativos;
+        }
         public static async Task<ActionResult> ApagarCarteira(AppDbContext db, int carteiraId, string username)
         {
             int? userIdFromCarteira = await db.GetUserIdFromCarteira(carteiraId);
@@ -75,6 +80,11 @@ namespace AtivoPlus.Logic
             if (userId.Value != userIdFromCarteira && !await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
             {
                 return new UnauthorizedObjectResult("User is not an admin");
+            }
+            List<AtivoFinanceiro> ativosIds = await CanCarteiraBeDeleted(db, carteiraId);
+            if (ativosIds.Count > 0)
+            {
+                return new BadRequestObjectResult("Carteira cannot be deleted because it contains ativos with name: " + string.Join(", ", ativosIds.Select(a => a.Nome)));
             }
 
             await db.DeleteCarteira(carteiraId);

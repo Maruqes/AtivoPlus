@@ -22,14 +22,11 @@ namespace AtivoPlus.Controllers
         public int UserId { get; set; }
 
         /// <summary>
-        /// ID da entidade do ativo
-        /// </summary>
-        public int EntidadeAtivoId { get; set; }
-
-        /// <summary>
         /// ID da carteira onde o ativo será adicionado.
         /// </summary>
         public int CarteiraId { get; set; }
+
+        public string Nome { get; set; } = string.Empty;
 
         /// <summary>
         /// Data de início do investimento.
@@ -63,6 +60,9 @@ namespace AtivoPlus.Controllers
         /// ID da nova carteira onde o ativo será movido.
         /// </summary>
         public int CarteiraId { get; set; }
+
+        public string Nome { get; set; } = string.Empty;
+
     }
 
 

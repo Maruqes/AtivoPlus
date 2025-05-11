@@ -19,6 +19,8 @@ namespace AtivoPlus.Models
         public Decimal ValorRenda { get; set; }
         public Decimal ValorMensalCondominio { get; set; }
         public Decimal ValorAnualDespesasEstimadas { get; set; }
+
+        public DateTime DataCriacao { get; set; } = DateTime.Now;
     }
 }
 

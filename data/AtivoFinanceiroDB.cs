@@ -12,7 +12,7 @@ namespace AtivoPlus.Data
 
 
 
-        public async Task<bool> CreateAtivoFinanceiro(int userId, int entidadeAtivoId, int carteiraId, DateTime dataInicio, int duracaoMeses, float taxaImposto)
+        public async Task<bool> CreateAtivoFinanceiro(int userId, string nome, int carteiraId, DateTime dataInicio, int duracaoMeses, float taxaImposto)
         {
             if (await UserLogic.CheckIfUserExistsById(this, userId) == false)
             {
@@ -23,11 +23,11 @@ namespace AtivoPlus.Data
             AtivoFinanceiro ativoFinanceiro = new AtivoFinanceiro
             {
                 UserId = userId,
-                EntidadeAtivoId = entidadeAtivoId,
                 CarteiraId = carteiraId,
                 DataInicio = dataInicio,
                 DuracaoMeses = duracaoMeses,
-                TaxaImposto = taxaImposto
+                TaxaImposto = taxaImposto,
+                Nome = nome
             };
 
             await AtivoFinanceiros.AddAsync(ativoFinanceiro);
@@ -77,5 +77,17 @@ namespace AtivoPlus.Data
             return await AtivoFinanceiros.FirstOrDefaultAsync(c => c.Id == ativoFinanceiroId);
         }
 
+        public async Task<List<AtivoFinanceiro>> GetAtivosByCarteiraId(int carteiraId)
+        {
+            List<AtivoFinanceiro> ativos = await AtivoFinanceiros.Where(c => c.CarteiraId == carteiraId).ToListAsync();
+            if (ativos == null)
+            {
+                return new List<AtivoFinanceiro>();
+            }
+            else
+            {
+                return ativos;
+            }
+        }
     }
 }
