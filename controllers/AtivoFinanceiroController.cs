@@ -65,6 +65,28 @@ namespace AtivoPlus.Controllers
 
     }
 
+    /// <summary>
+    /// Representa os dados necessários para transferir múltiplos ativos financeiros entre carteiras.
+    /// </summary>
+    public class AtivoFinanceiroTransferRequest
+    {
+        /// <summary>
+        /// Utiliza -1 para indicar o utilizador atualmente autenticado.  
+        /// Qualquer outro ID só pode ser usado por administradores.
+        /// </summary>
+        public int UserId { get; set; }
+
+        /// <summary>
+        /// IDs dos ativos financeiros a serem transferidos.
+        /// </summary>
+        public List<int> AtivoFinanceiroIds { get; set; } = new List<int>();
+
+        /// <summary>
+        /// ID da nova carteira onde os ativos serão movidos.
+        /// </summary>
+        public int NovaCarteiraId { get; set; }
+    }
+
 
     [Route("api/ativofinanceiro")] // A API está definida em "api/user"
     [ApiController] // Indica que este é um Controller de API
@@ -156,5 +178,15 @@ namespace AtivoPlus.Controllers
             return await AtivoFinanceiroLogic.RemoveAtivo(db, ativoFinanceiroId, username);
         }
 
+        [HttpPost("transferir")]
+        public async Task<ActionResult> TransferirAtivosFinanceiros([FromBody] AtivoFinanceiroTransferRequest transferRequest)
+        {
+            string username = UserLogic.CheckUserLoggedRequest(Request);
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+            return await AtivoFinanceiroLogic.TransferirAtivos(db, transferRequest, username);
+        }
     }
 }

@@ -28,6 +28,24 @@ namespace AtivoPlus.Controllers
         public string Nome { get; set; } = string.Empty;
     }
 
+    public class DeleteCarteiraConfirmationRequest
+    {
+        /// <summary>
+        /// ID da carteira a ser apagada
+        /// </summary>
+        public int CarteiraId { get; set; }
+
+        /// <summary>
+        /// Indica se o utilizador confirmou a eliminação mesmo com ativos presentes
+        /// </summary>
+        public bool ForceDelete { get; set; } = false;
+
+        /// <summary>
+        /// Se ForceDelete for true e esta propriedade for preenchida, os ativos serão transferidos para a carteira indicada
+        /// </summary>
+        public int? MoveAtivosToCarteiraId { get; set; }
+    }
+
 
     [Route("api/carteira")]
     [ApiController]
@@ -136,5 +154,20 @@ namespace AtivoPlus.Controllers
             return Ok(await db.GetCarteirasByUserId(userIdFromCarteira.Value));
         }
 
+        /// <summary>
+        /// Apaga uma carteira com confirmação.
+        /// Id da carteira deve ser do utilizador autenticado ou um admin pode apagar qualquer carteira.
+        /// </summary>
+        [HttpPost("apagarComConfirmacao")]
+        public async Task<ActionResult> ApagarCarteiraComConfirmacao([FromBody] DeleteCarteiraConfirmationRequest request)
+        {
+            string username = UserLogic.CheckUserLoggedRequest(Request);
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+
+            return await CarteiraLogic.ApagarCarteiraComConfirmacao(db, request, username);
+        }
     }
 }
