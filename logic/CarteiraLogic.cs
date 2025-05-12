@@ -79,16 +79,100 @@ namespace AtivoPlus.Logic
 
             if (userId.Value != userIdFromCarteira && !await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
             {
-                return new UnauthorizedObjectResult("User is not an admin");
+                return new UnauthorizedObjectResult("User is not the owner of this wallet or an admin");
             }
-            List<AtivoFinanceiro> ativosIds = await CanCarteiraBeDeleted(db, carteiraId);
-            if (ativosIds.Count > 0)
+
+            // Check if there are any ativos associated with this carteira
+            List<AtivoFinanceiro> ativos = await CanCarteiraBeDeleted(db, carteiraId);
+            if (ativos.Count > 0)
             {
-                return new BadRequestObjectResult("Carteira cannot be deleted because it contains ativos with name: " + string.Join(", ", ativosIds.Select(a => a.Nome)));
+                // Provide more detailed error message including assets that need to be moved
+                return new BadRequestObjectResult(new
+                {
+                    message = "Carteira cannot be deleted because it contains financial assets that need to be moved or deleted first",
+                    ativos = ativos.Select(a => new { id = a.Id, nome = a.Nome }).ToList()
+                });
             }
 
             await db.DeleteCarteira(carteiraId);
             return new OkResult();
+        }
+
+        public static async Task<ActionResult> ApagarCarteiraComConfirmacao(AppDbContext db, DeleteCarteiraConfirmationRequest request, string username)
+        {
+            int carteiraId = request.CarteiraId;
+
+            int? userIdFromCarteira = await db.GetUserIdFromCarteira(carteiraId);
+            if (userIdFromCarteira == null)
+            {
+                return new NotFoundObjectResult("Carteira not found");
+            }
+
+            int? userId = await UserLogic.GetUserID(db, username);
+            if (userId == null)
+            {
+                return new UnauthorizedObjectResult("User not found");
+            }
+
+            bool isAdmin = await PermissionLogic.CheckPermission(db, username, new[] { "admin" });
+            if (userId.Value != userIdFromCarteira && !isAdmin)
+            {
+                return new UnauthorizedObjectResult("User is not the owner of this wallet or an admin");
+            }
+
+            // Check if there are any ativos associated with this carteira
+            List<AtivoFinanceiro> ativos = await CanCarteiraBeDeleted(db, carteiraId);
+
+            // If there are ativos and ForceDelete is false, return information about what assets will be deleted
+            if (ativos.Count > 0 && !request.ForceDelete)
+            {
+                return new OkObjectResult(new
+                {
+                    confirmationRequired = true,
+                    message = "This wallet contains assets that need to be handled before deletion",
+                    ativos = ativos.Select(a => new { id = a.Id, nome = a.Nome }).ToList()
+                });
+            }
+
+            // If ForceDelete and MoveAtivosToCarteiraId are specified, move the assets
+            if (request.ForceDelete && request.MoveAtivosToCarteiraId.HasValue)
+            {
+                // Check if the destination carteira exists and belongs to the same user
+                var destCarteira = await db.GetCarteiraById(request.MoveAtivosToCarteiraId.Value);
+                if (destCarteira == null)
+                {
+                    return new NotFoundObjectResult("Destination wallet not found");
+                }
+
+                if (destCarteira.UserId != userId && !isAdmin)
+                {
+                    return new UnauthorizedObjectResult("User is not the owner of the destination wallet");
+                }
+
+                // Move all assets to the new carteira
+                foreach (var ativo in ativos)
+                {
+                    ativo.CarteiraId = request.MoveAtivosToCarteiraId.Value;
+                }
+
+                await db.SaveChangesAsync();
+            }
+            else if (ativos.Count > 0)
+            {
+                // User wants to force delete without moving the assets
+                return new BadRequestObjectResult(new
+                {
+                    message = "Cannot delete a wallet with assets without specifying where to move them"
+                });
+            }
+
+            // Delete the carteira
+            await db.DeleteCarteira(carteiraId);
+            return new OkObjectResult(new
+            {
+                success = true,
+                message = "Wallet successfully deleted"
+            });
         }
 
         public static async Task<List<Carteira>?> GetCarteiras(AppDbContext db, string username)

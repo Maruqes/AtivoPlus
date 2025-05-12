@@ -17,6 +17,13 @@ namespace AtivoPlus.Logic
 
         public static async Task<ActionResult> AlterarAtivoFinanceiroParaOutraCarteira(AppDbContext db, AtivoFinanceiroAlterarCarteiraRequest ativoFinanceiro, string username)
         {
+            // First check if the ativo financeiro exists
+            var ativoExistente = await db.GetAtivoFinanceiroById(ativoFinanceiro.AtivoFinanceiroId);
+            if (ativoExistente == null)
+            {
+                return new NotFoundObjectResult("Ativo Financeiro not found");
+            }
+
             if (ativoFinanceiro.UserId == -1)
             {
                 int? userId = await UserLogic.GetUserID(db, username);
@@ -24,6 +31,13 @@ namespace AtivoPlus.Logic
                 {
                     return new UnauthorizedObjectResult("User not found");
                 }
+
+                // Verify that the user owns the ativo financeiro
+                if (ativoExistente.UserId != userId)
+                {
+                    return new UnauthorizedObjectResult("User is not the owner of the asset");
+                }
+
                 if (!await CheckCarteiraOwner(db, ativoFinanceiro.CarteiraId, userId.Value))
                 {
                     return new UnauthorizedObjectResult("User is not the owner of the wallet, trying to do something fishy?");
@@ -51,9 +65,13 @@ namespace AtivoPlus.Logic
 
         public static async Task<ActionResult> AdicionarAtivoFinanceiro(AppDbContext db, AtivoFinanceiroRequest ativoFinanceiro, string username)
         {
+            // Validate the Nome field
+            if (string.IsNullOrWhiteSpace(ativoFinanceiro.Nome))
+            {
+                return new BadRequestObjectResult("Asset name cannot be empty");
+            }
 
-
-            // -1 indicates use the owner’s userId
+            // -1 indicates use the owner's userId
             if (ativoFinanceiro.UserId == -1)
             {
                 int? userId = await UserLogic.GetUserID(db, username);
@@ -108,6 +126,67 @@ namespace AtivoPlus.Logic
             }
             await db.RemoveAtivoFinanceiro(ativoId);
             return new OkResult();
+        }
+
+        public static async Task<ActionResult> TransferirAtivos(AppDbContext db, AtivoFinanceiroTransferRequest transferRequest, string username)
+        {
+            // Verify the destination carteira exists
+            var carteira = await db.GetCarteiraById(transferRequest.NovaCarteiraId);
+            if (carteira == null)
+            {
+                return new NotFoundObjectResult("Destination wallet not found");
+            }
+
+            int? userId;
+            if (transferRequest.UserId == -1)
+            {
+                userId = await UserLogic.GetUserID(db, username);
+                if (userId == null)
+                {
+                    return new UnauthorizedObjectResult("User not found");
+                }
+            }
+            else
+            {
+                // Only admins can specify a user ID
+                if (!await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
+                {
+                    return new UnauthorizedObjectResult("User is not an admin");
+                }
+                userId = transferRequest.UserId;
+            }
+
+            // Check if the user owns the destination carteira
+            if (!await CheckCarteiraOwner(db, transferRequest.NovaCarteiraId, userId.Value))
+            {
+                return new UnauthorizedObjectResult("User is not the owner of the destination wallet");
+            }
+
+            var results = new List<object>();
+            foreach (int ativoId in transferRequest.AtivoFinanceiroIds)
+            {
+                // Get the ativo
+                var ativo = await db.GetAtivoFinanceiroById(ativoId);
+                if (ativo == null)
+                {
+                    results.Add(new { ativoId, success = false, message = "Ativo not found" });
+                    continue;
+                }
+
+                // Verify ownership of the ativo
+                if (ativo.UserId != userId && !await PermissionLogic.CheckPermission(db, username, new[] { "admin" }))
+                {
+                    results.Add(new { ativoId, success = false, message = "User is not the owner of the asset" });
+                    continue;
+                }
+
+                // Move the ativo to the new carteira
+                ativo.CarteiraId = transferRequest.NovaCarteiraId;
+                results.Add(new { ativoId, success = true, message = "Successfully transferred" });
+            }
+
+            await db.SaveChangesAsync();
+            return new OkObjectResult(new { results });
         }
     }
 }

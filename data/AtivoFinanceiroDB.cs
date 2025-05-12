@@ -43,6 +43,15 @@ namespace AtivoPlus.Data
                 return false;
             }
 
+            // Carteira existence check only
+            var carteira = await Carteiras.FirstOrDefaultAsync(c => c.Id == novaCarteiraId);
+            if (carteira == null)
+            {
+                return false;
+            }
+
+            // Ownership check will be handled at the logic layer
+
             ativoFinanceiro.CarteiraId = novaCarteiraId;
             await SaveChangesAsync();
             return true;
