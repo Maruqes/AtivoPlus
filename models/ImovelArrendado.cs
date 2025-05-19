@@ -9,8 +9,6 @@ namespace AtivoPlus.Models
         public int Id { get; set; }
         [ForeignKey("AtivoFimanceiro")]
         public int AtivoFinaceiroId { get; set; } 
-        [ForeignKey("TipoAtivo")]
-        public int TipoAtivoId { get; set; } 
         [ForeignKey("Morada")]
         public int MoradaId { get; set; }
         public string Designacao { get; set; } = string.Empty;

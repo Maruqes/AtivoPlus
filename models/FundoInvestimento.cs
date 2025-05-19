@@ -13,12 +13,8 @@ namespace AtivoPlus.Models
         public int Id { get; set; }
         [ForeignKey("AtivoFinanceiro")]
         public int AtivoFinaceiroId { get; set; }
-        [ForeignKey("TipoAtivo")]
-        public int TipoAtivoId { get; set; }
         public string Nome { get; set; } = string.Empty;
         public decimal MontanteInvestido { get; set; }
-        public float TaxaJuro { get; set; }
-        public Boolean TaxaFixa { get; set; }
         public string AtivoSigla { get; set; } = string.Empty;
 
         public DateTime DataCriacao { get; set; } = DateTime.Now;
