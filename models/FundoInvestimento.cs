@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AtivoPlus.Models
 {
     //crypto/etf/stock
-    [Index(nameof(Nome), IsUnique = true)]
+    [Index(nameof(Nome))]
     public class FundoInvestimento
     {
         [Key]
@@ -17,7 +17,7 @@ namespace AtivoPlus.Models
         public decimal MontanteInvestido { get; set; }
         public string AtivoSigla { get; set; } = string.Empty;
 
-        public DateTime DataCriacao { get; set; } = DateTime.Now;
+        public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
     }
 }
 
