@@ -119,5 +119,12 @@ namespace AtivoPlus.Data
 
             return resultado;
         }
+
+        public async Task<List<FundoInvestimento>> GetFundoInvestimentoByAtivoFinanceiroId(int ativoFinanceiroId)
+        {
+            return await FundoInvestimentos
+                .Where(f => f.AtivoFinaceiroId == ativoFinanceiroId)
+                .ToListAsync();
+        }
     }
 }

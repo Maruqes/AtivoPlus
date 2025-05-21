@@ -114,5 +114,10 @@ namespace AtivoPlus.Data
         {
             return await DepositoPrazos.Where(d => d.TitularId == userId).ToListAsync();
         }
+
+        public async Task<List<DepositoPrazo>> GetDepositoPrazoByAtivoFinanceiroId(int ativoFinanceiroId)
+        {
+            return await DepositoPrazos.Where(d => d.AtivoFinaceiroId == ativoFinanceiroId).ToListAsync();
+        }
     }
 }
