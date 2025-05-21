@@ -8,9 +8,9 @@ namespace AtivoPlus.Models
         [Key]
         public int Id { get; set; }
         [ForeignKey("AtivoFimanceiro")]
-        public int AtivoFinaceiroId { get; set; } 
+        public int AtivoFinaceiroId { get; set; }
         [ForeignKey("Morada")]
-        public int MoradaId { get; set; }
+        public string MoradaId { get; set; } = string.Empty;
         public string Designacao { get; set; } = string.Empty;
         public string Localizacao { get; set; } = string.Empty;
         public Decimal ValorImovel { get; set; }
