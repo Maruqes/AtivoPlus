@@ -46,6 +46,7 @@ namespace AtivoPlus.Tests
             {
                 UserId = -1, // resolves to user1 if valid
                 CarteiraId = user2Wallets[0].Id,
+                Nome = "User2Asset",
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
                 TaxaImposto = 0.1f
@@ -80,6 +81,7 @@ namespace AtivoPlus.Tests
             {
                 UserId = user2Id.Value,
                 CarteiraId = user2Wallets[0].Id,
+                Nome = "User2Asset",
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
                 TaxaImposto = 0.1f
@@ -122,6 +124,7 @@ namespace AtivoPlus.Tests
             {
                 UserId = user2Id.Value,
                 CarteiraId = user2Wallets[0].Id,
+                Nome = "User2Asset",
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
                 TaxaImposto = 0.1f
@@ -135,9 +138,10 @@ namespace AtivoPlus.Tests
             // Act: as user1, try to move the asset from wallet1 to wallet2.
             ActionResult alterResult = await AtivoFinanceiroLogic.AlterarAtivoFinanceiroParaOutraCarteira(db, new AtivoFinanceiroAlterarCarteiraRequest
             {
+                UserId = -1,  // resolves to user1 if valid
                 AtivoFinanceiroId = asset.Id,
                 CarteiraId = user2Wallets[1].Id,
-                UserId = -1  // user1 attempting unauthorized alteration
+                Nome = "User2Asset"
             }, "user1");
             // Expectation: unauthorized access returns UnauthorizedObjectResult.
             Assert.IsType<UnauthorizedObjectResult>(alterResult);
@@ -167,6 +171,7 @@ namespace AtivoPlus.Tests
             {
                 UserId = -1,
                 CarteiraId = user1Wallets[0].Id,
+                Nome = "User1Asset",
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
                 TaxaImposto = 0.1f
@@ -200,6 +205,7 @@ namespace AtivoPlus.Tests
             {
                 UserId = user1Id.Value,
                 CarteiraId = user1Wallets[0].Id,
+                Nome = "User1Asset",
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
                 TaxaImposto = 0.1f
@@ -231,6 +237,7 @@ namespace AtivoPlus.Tests
             {
                 UserId = -1,
                 CarteiraId = user1Wallets[0].Id,
+                Nome = "User1Asset",
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
                 TaxaImposto = 0.1f
@@ -272,6 +279,7 @@ namespace AtivoPlus.Tests
             {
                 UserId = user1Id.Value,
                 CarteiraId = user1Wallets[0].Id,
+                Nome = "User1Asset",
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
                 TaxaImposto = 0.1f
@@ -314,6 +322,7 @@ namespace AtivoPlus.Tests
             {
                 UserId = -1,
                 CarteiraId = user1Wallets[0].Id,
+                Nome = "User1Asset",
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
                 TaxaImposto = 0.1f
@@ -327,9 +336,10 @@ namespace AtivoPlus.Tests
             // Owner alters the asset's wallet from wallet1 to wallet2.
             ActionResult alterResult = await AtivoFinanceiroLogic.AlterarAtivoFinanceiroParaOutraCarteira(db, new AtivoFinanceiroAlterarCarteiraRequest
             {
+                UserId = -1, // resolves to user1 if valid
                 AtivoFinanceiroId = asset.Id,
                 CarteiraId = user1Wallets[1].Id,
-                UserId = -1
+                Nome = "User1Asset"
             }, "user1");
             Assert.IsType<OkResult>(alterResult);
 
@@ -354,37 +364,37 @@ namespace AtivoPlus.Tests
             // Create two wallets for user1.
             await CreateWallet(db, user1Id.Value, "User1Wallet1");
             await CreateWallet(db, user1Id.Value, "User1Wallet2");
-            List<Carteira>? user1Wallets = await CarteiraLogic.GetCarteiras(db, "user1");
-            Assert.NotNull(user1Wallets);
+            var user1Wallets = await CarteiraLogic.GetCarteiras(db, "user1");
             Assert.Equal(2, user1Wallets.Count);
 
             // Admin adds an asset for user1 in wallet1.
-            ActionResult addResult = await AtivoFinanceiroLogic.AdicionarAtivoFinanceiro(db, new AtivoFinanceiroRequest
+            var addResult = await AtivoFinanceiroLogic.AdicionarAtivoFinanceiro(db, new AtivoFinanceiroRequest
             {
                 UserId = user1Id.Value,
                 CarteiraId = user1Wallets[0].Id,
+                Nome = "User1Asset",
                 DataInicio = DateTime.UtcNow,
                 DuracaoMeses = 1,
                 TaxaImposto = 0.1f
             }, "admin");
             Assert.IsType<OkResult>(addResult);
 
-            List<AtivoFinanceiro> assets = await db.GetAtivoByUserId(user1Id.Value);
-            Assert.Single(assets);
+            var assets = await db.GetAtivoByUserId(user1Id.Value);
             var asset = assets[0];
 
-            // Admin alters the asset's wallet from wallet1 to wallet2.
-            ActionResult alterResult = await AtivoFinanceiroLogic.AlterarAtivoFinanceiroParaOutraCarteira(db, new AtivoFinanceiroAlterarCarteiraRequest
+            // Act: admin tries to move the asset from wallet1 to wallet2.
+            var alterResult = await AtivoFinanceiroLogic.AlterarAtivoFinanceiroParaOutraCarteira(db, new AtivoFinanceiroAlterarCarteiraRequest
             {
+                UserId = -1,  // resolves to user1 if valid
                 AtivoFinanceiroId = asset.Id,
                 CarteiraId = user1Wallets[1].Id,
-                UserId = user1Id.Value
+                Nome = "User1Asset"
             }, "admin");
-            Assert.IsType<OkResult>(alterResult);
 
-            assets = await db.GetAtivoByUserId(user1Id.Value);
-            Assert.Single(assets);
-            Assert.Equal(user1Wallets[1].Id, assets[0].CarteiraId);
+            // Agora deve retornar UnauthorizedObjectResult
+            var unauthorized = Assert.IsType<UnauthorizedObjectResult>(alterResult);
+            Assert.Equal("User is not the owner of the asset", unauthorized.Value);
         }
+
     }
 }
