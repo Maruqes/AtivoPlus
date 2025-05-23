@@ -365,6 +365,7 @@ namespace AtivoPlus.Tests
             await CreateWallet(db, user1Id.Value, "User1Wallet1");
             await CreateWallet(db, user1Id.Value, "User1Wallet2");
             var user1Wallets = await CarteiraLogic.GetCarteiras(db, "user1");
+            Assert.NotNull(user1Wallets);
             Assert.Equal(2, user1Wallets.Count);
 
             // Admin adds an asset for user1 in wallet1.

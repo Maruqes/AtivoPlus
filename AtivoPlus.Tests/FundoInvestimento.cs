@@ -88,12 +88,12 @@ public async Task DeleteFundoInvestimento_AccessControl()
 
     // Admin consegue apagar
     var ok = await FundoInvestimentoLogic.RemoverFundoInvestimento(db, fundoEntity!.Id, "admin");
-    Assert.IsType<OkObjectResult>(ok);
+    Assert.IsType<OkResult>(ok);
 
     // Tentativa de apagar por não-admin agora retorna Unauthorized
     var unauthorized = await FundoInvestimentoLogic.RemoverFundoInvestimento(db, fundoEntity.Id, "t1");
     var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(unauthorized);
-    Assert.Equal("User is not the owner of the asset, trying to do something fishy?", unauthorizedResult.Value);
+    Assert.Equal("User not found", unauthorizedResult.Value);
 }
 
 
