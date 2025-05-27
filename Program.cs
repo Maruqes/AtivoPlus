@@ -10,18 +10,6 @@ using System.Reflection;
 using Newtonsoft.Json.Linq;
 
 
-async void init()
-{
-    //check if there are the 3 types of ativos we have
-    var db_ativo = AppDbContext.GetDb();
-    await db_ativo.AddTipoAtivoIfDoesNotExist("fundo_investimento");
-    await db_ativo.AddTipoAtivoIfDoesNotExist("imovel_arrendado");
-    await db_ativo.AddTipoAtivoIfDoesNotExist("deposito_prazo");
-
-    //popular db com candles dos principais ativos
-
-}
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -120,8 +108,6 @@ if (string.IsNullOrEmpty(apiKey))
     Environment.Exit(1);
 }
 TwelveDataLogic.StartTwelveDataLogic(apiKey);
-
-init();
 
 app.UseStaticFiles();
 app.UseRouting();

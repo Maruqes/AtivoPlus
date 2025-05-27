@@ -106,7 +106,6 @@ namespace AtivoPlus.Logic
 
         public static async Task<ActionResult> RemoveAtivo(AppDbContext db, int ativoId, string username)
         {
-
             int? userId = await UserLogic.GetUserID(db, username);
             if (userId == null)
             {
@@ -124,6 +123,17 @@ namespace AtivoPlus.Logic
             {
                 return new UnauthorizedObjectResult("User is not the owner of the asset, trying to do something fishy?");
             }
+
+            // Check if the ativo is linked to any ImovelArrendado or DepositoPrazo or FundoInvestimento
+            var imovelArrendado = await db.GetImovelArrendadoByAtivoFinanceiroId(ativoId);
+            var depositoPrazo = await db.GetDepositoPrazoByAtivoFinanceiroId(ativoId);
+            var fundoInvestimento = await db.GetFundoInvestimentoByAtivoFinanceiroId(ativoId);
+
+            if (imovelArrendado.Count > 0 || depositoPrazo.Count > 0 || fundoInvestimento.Count > 0)
+            {
+                return new BadRequestObjectResult("Cannot delete ativo financeiro linked to other entities");
+            }
+
             await db.RemoveAtivoFinanceiro(ativoId);
             return new OkResult();
         }

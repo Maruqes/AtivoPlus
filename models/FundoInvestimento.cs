@@ -6,22 +6,18 @@ using Microsoft.EntityFrameworkCore;
 namespace AtivoPlus.Models
 {
     //crypto/etf/stock
-    [Index(nameof(Nome), IsUnique = true)]
+    [Index(nameof(Nome))]
     public class FundoInvestimento
     {
         [Key]
         public int Id { get; set; }
         [ForeignKey("AtivoFinanceiro")]
         public int AtivoFinaceiroId { get; set; }
-        [ForeignKey("TipoAtivo")]
-        public int TipoAtivoId { get; set; }
         public string Nome { get; set; } = string.Empty;
         public decimal MontanteInvestido { get; set; }
-        public float TaxaJuro { get; set; }
-        public Boolean TaxaFixa { get; set; }
         public string AtivoSigla { get; set; } = string.Empty;
 
-        public DateTime DataCriacao { get; set; } = DateTime.Now;
+        public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
     }
 }
 

@@ -18,9 +18,14 @@ namespace AtivoPlus.Logic
     {
         private static HttpClient _httpClient = null!;
         private static string _apiKey = ""; // A tua API key do Twelve Data
-        private static Dictionary<string, JObject> _cachedJsonFiles = new Dictionary<string, JObject>();
         private static readonly string[] _priority =
-                { "symbol", "name", "currency", "category", "country" };
+        { "symbol", "name", "currency", "category", "country" };
+
+        private static readonly Dictionary<string, JObject> _cachedJsonFiles = new();
+        // Lista achada e plana de todos os objetos
+        private static List<JObject> _allEntries = new();
+
+        private static Regex _searchRegex;
 
         public static void StartTwelveDataLogic(string apiKey)
         {
@@ -34,27 +39,33 @@ namespace AtivoPlus.Logic
                 if (string.IsNullOrWhiteSpace(_apiKey))
                     throw new Exception("API key do Twelve Data não definida.");
 
-                // Load and cache JSON files during initialization
+                // Carregar e cache de ficheiros JSON
                 string jsonDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TwelveJson");
                 if (Directory.Exists(jsonDir))
                 {
-                    string[] jsonFiles = Directory.GetFiles(jsonDir, "*.json");
-                    foreach (string file in jsonFiles)
+                    var jsonFiles = Directory.GetFiles(jsonDir, "*.json");
+                    foreach (var file in jsonFiles)
                     {
                         try
                         {
-                            string fileName = Path.GetFileName(file);
-                            string jsonContent = File.ReadAllText(file);
-                            JObject jsonObject = JObject.Parse(jsonContent);
+                            var fileName = Path.GetFileName(file);
+                            var jsonContent = File.ReadAllText(file);
+                            var jsonObject = JObject.Parse(jsonContent);
                             _cachedJsonFiles[fileName] = jsonObject;
                             Console.WriteLine($"Loaded JSON file: {fileName}");
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Error loading JSON file {file}: {ex.Message}");
+                            Console.WriteLine($"Error loading {file}: {ex.Message}");
                         }
                     }
-                    Console.WriteLine($"Cached {_cachedJsonFiles.Count} JSON files during initialization");
+                    Console.WriteLine($"Cached {_cachedJsonFiles.Count} JSON files");
+
+                    // Flattening apenas uma vez ao iniciar
+                    _allEntries = _cachedJsonFiles.Values
+                        .SelectMany(token => Flatten(token))
+                        .ToList();
+                    Console.WriteLine($"Flattened total entries: {_allEntries.Count}");
                 }
                 else
                 {
@@ -257,106 +268,94 @@ namespace AtivoPlus.Logic
             return candles;
         }
 
-        public static bool DoesSymbolExists(String symbol)
+        public static JObject? GetCachedJsonFile(string fileName)
         {
+            if (_cachedJsonFiles.TryGetValue(fileName, out JObject? jsonObject))
+            {
+                return jsonObject;
+            }
+
             try
             {
-                if (string.IsNullOrWhiteSpace(symbol))
+                string jsonDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TwelveJson");
+                string filePath = Path.Combine(jsonDir, fileName);
+
+                if (!File.Exists(filePath))
                 {
-                    return false;
+                    Console.WriteLine($"JSON file not found: {filePath}");
+                    return null;
                 }
 
-                // Use cached JSON objects instead of reading from disk
-                if (_cachedJsonFiles.Count == 0)
-                {
-                    Console.WriteLine("No cached JSON files available. Symbol verification cannot proceed.");
-                    return false;
-                }
+                string jsonContent = File.ReadAllText(filePath);
+                jsonObject = JObject.Parse(jsonContent);
+                _cachedJsonFiles[fileName] = jsonObject;
 
-                // Check each cached JSON file for the symbol
-                foreach (var entry in _cachedJsonFiles)
-                {
-                    string fileName = entry.Key;
-                    JObject jsonObject = entry.Value;
-
-                    // Different JSON files may have different structures
-                    // We need to check for symbols in all possible paths
-                    if (jsonObject["data"] is JArray dataArray)
-                    {
-                        foreach (var item in dataArray)
-                        {
-                            string symbolValue = item["symbol"]?.ToString() ?? "";
-                            if (symbolValue.Equals(symbol, StringComparison.OrdinalIgnoreCase))
-                            {
-                                Console.WriteLine($"Symbol {symbol} found in {fileName}");
-                                return true;
-                            }
-                        }
-                    }
-
-                    // Also check if this is a direct mapping with symbol as key
-                    if (jsonObject[symbol] != null)
-                    {
-                        Console.WriteLine($"Symbol {symbol} found in {fileName}");
-                        return true;
-                    }
-                }
-
-                Console.WriteLine($"Symbol {symbol} not found in any JSON file");
-                return false;
+                return jsonObject;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception in DoesSymbolExists: {ex.Message}");
-                return false;
+                Console.WriteLine($"Error loading JSON file {fileName}: {ex.Message}");
+                return null;
             }
         }
+
+        public static bool DoesSymbolExists(string symbol)
+        {
+            if (string.IsNullOrWhiteSpace(symbol) || _allEntries.Count == 0)
+                return false;
+
+            // Procura direta em lista plana
+            return _allEntries.Any(j =>
+                string.Equals(j["symbol"]?.ToString(), symbol, StringComparison.OrdinalIgnoreCase));
+        }
+
         public static List<JObject> SearchJsonFiles(string searchTerm, int numberOfResults = 50)
         {
-            if (string.IsNullOrWhiteSpace(searchTerm) || numberOfResults <= 0)
+            if (string.IsNullOrWhiteSpace(searchTerm) || numberOfResults <= 0 || _allEntries.Count == 0)
                 return new();
 
-            // termo exacto (fronteiras alfanuméricas)
-            var regex = new Regex(
-                $@"(?<![\p{{L}}\p{{N}}]){Regex.Escape(searchTerm)}(?![\p{{L}}\p{{N}}])",
-                RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            // Construir regex uma vez por termo
+            _searchRegex = new Regex($"(?<![\\p{{L}}\\p{{N}}]){Regex.Escape(searchTerm)}(?![\\p{{L}}\\p{{N}}])",
+                                     RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-            var results = _cachedJsonFiles                 // cada ficheiro em cache
-                .SelectMany(e => Flatten(e.Value))         // achata tudo o que for array/object
-                .Where(o => regex.IsMatch(o.ToString()))   // contém o termo exacto
-                .Select(o => new { Obj = o, Score = GetScore(o, regex) })
-                .DistinctBy(x => (string?)x.Obj["symbol"]  // elimina duplicados símbolo+exchange
-                                   + "|" + (string?)x.Obj["exchange"])
-                .OrderByDescending(x => x.Score)           // mais relevante primeiro
-                .ThenBy(x => (string?)x.Obj["symbol"])
-                .Take(numberOfResults)                     // aqui garante: nunca mais do que N
+            var results = _allEntries
+                // Filtrar apenas objetos que contenham termo em campos prioritários ou em qualquer campo
+                .Select(j => new
+                {
+                    Obj = j,
+                    Score = GetScore(j)
+                })
+                .Where(x => x.Score > 0)
+                .OrderByDescending(x => x.Score)
+                .ThenBy(x => x.Obj["symbol"]?.ToString())
+                .Take(numberOfResults)
                 .Select(x => x.Obj)
+                .DistinctBy(o => (string?)o["symbol"] + "|" + (string?)o["exchange"])
                 .ToList();
 
             return results;
         }
 
-        /*— helpers —*/
-
         private static IEnumerable<JObject> Flatten(JToken token)
         {
-            // devolve o próprio token se for JObject…
-            if (token.Type == JTokenType.Object)
-                yield return (JObject)token;
+            if (token is JObject obj)
+                yield return obj;
 
-            // …e percorre recursivamente os filhos
             foreach (var child in token.Children())
+            {
                 foreach (var j in Flatten(child))
                     yield return j;
+            }
         }
 
-        private static int GetScore(JObject j, Regex regex)
+        private static int GetScore(JObject j)
         {
             for (int i = 0; i < _priority.Length; i++)
             {
-                var k = _priority[i];
-                if (j[k] != null && regex.IsMatch(j[k]!.ToString()))
-                    return _priority.Length - i;   // quanto mais cedo na lista, maior o score
+                var field = _priority[i];
+                var value = j[field]?.ToString();
+                if (!string.IsNullOrEmpty(value) && _searchRegex.IsMatch(value))
+                    return _priority.Length - i;
             }
             return 0;
         }
