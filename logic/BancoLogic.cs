@@ -34,15 +34,15 @@ namespace AtivoPlus.Logic
                 return new UnauthorizedObjectResult("User is not an admin");
             }
 
-            if (await db.BancoNameExists(banco.Nome))
-            {
-                return new BadRequestObjectResult("Banco já existe");
-            }
-
             var bancoDB = await db.GetBancoById(banco.bancoId);
             if (bancoDB == null)
             {
                 return new NotFoundObjectResult("Banco não encontrado");
+            }
+
+            if (bancoDB.Nome != banco.Nome && await db.BancoNameExists(banco.Nome))
+            {
+                return new BadRequestObjectResult("Banco com esse nome já existe");
             }
 
             await db.UpdateBanco(banco.bancoId, banco.Nome);

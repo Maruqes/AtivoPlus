@@ -60,6 +60,10 @@ namespace AtivoPlus.Logic
                 {
                     return new UnauthorizedObjectResult("User is not the owner of the asset, trying to do something fishy?");
                 }
+                if (!await UserLogic.CheckIfUserExistsById(db, depositoRequest.UserId))
+                {
+                    return new BadRequestObjectResult("User not found");
+                }
                 await db.CreateDepositoPrazo(
                     depositoRequest.AtivoFinaceiroId,
                     depositoRequest.BancoId,
