@@ -121,7 +121,7 @@ namespace AtivoPlus.Logic
 
         public static async Task<List<Candle>?> GetCandles(string symbol, AppDbContext db, string interval = "1day", DateTime LastDay = default)
         {
-            if (interval != "1day" || interval != "1week" || interval != "1month")
+            if (interval != "1day" && interval != "1week" && interval != "1month")
             {
                 Console.WriteLine("Intervalo inválido. Usando o padrão '1day'.");
                 interval = "1day";
