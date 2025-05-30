@@ -248,25 +248,6 @@ namespace AtivoPlus.Logic
             }
         }
 
-        public static async Task<List<Candle>?> GetStockCandles(string symbol, AppDbContext db, string interval = "1day", DateTime LastDay = default)
-        {
-            List<Candle>? candles = await GetCandles(symbol, db, interval, LastDay);
-            return candles;
-        }
-
-        public static async Task<List<Candle>?> GetETFCandles(string symbol, AppDbContext db, string interval = "1day", DateTime LastDay = default)
-        {
-            List<Candle>? candles = await GetCandles(symbol, db, interval, LastDay);
-            return candles;
-        }
-
-        public static async Task<List<Candle>?> GetCryptoCandles(string symbol, AppDbContext db, string interval = "1day", DateTime LastDay = default)
-        {
-            // Twelve Data usa símbolos como BTC/USD, ETH/USD, etc.
-            string formattedSymbol = symbol.ToUpper().EndsWith("/USD") ? symbol : $"{symbol.ToUpper()}/USD";
-            List<Candle>? candles = await GetCandles(formattedSymbol, db, interval, LastDay);
-            return candles;
-        }
 
         public static JObject? GetCachedJsonFile(string fileName)
         {
