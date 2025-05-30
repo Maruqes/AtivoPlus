@@ -29,7 +29,7 @@ namespace AtivoPlus.Controllers
         /// <param name="interval">Intervalo: 1day, 1week ou 1month</param>
         /// <returns>Lista de candles</returns>
         [HttpGet("time/{date}/{symbol}/{type}/{interval}")]
-        public async Task<ActionResult<string>> GetCandles(string symbol, string type, string date, string interval)
+        public async Task<ActionResult<string>> GetCandles(string symbol, string date, string interval)
         {
             if (!DateTime.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture,
                          DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var parsedDate))
@@ -41,28 +41,9 @@ namespace AtivoPlus.Controllers
             {
                 return BadRequest("Invalid interval. Expected \"1day\", \"1week\", or \"1month\".");
             }
-            if (type != "ETF" && type != "STOCK" && type != "CRYPTO")
-            {
-                return BadRequest("Invalid type. Expected \"ETF\", \"STOCK\", or \"CRYPTO\".");
-            }
 
-            if (type == "ETF")
-            {
-                List<Candle>? candles = await TwelveDataLogic.GetETFCandles(symbol, db, interval, parsedDate);
-                return Ok(candles);
-            }
-            else if (type == "STOCK")
-            {
-                List<Candle>? candles = await TwelveDataLogic.GetStockCandles(symbol, db, interval, parsedDate);
-                return Ok(candles);
-            }
-            else if (type == "CRYPTO")
-            {
-                List<Candle>? candles = await TwelveDataLogic.GetCryptoCandles(symbol, db, interval, parsedDate);
-                return Ok(candles);
-            }
-
-            return Ok($"Parsed date: {parsedDate:F}");
+            List<Candle>? candles = await TwelveDataLogic.GetCandles(symbol, db, interval, parsedDate);
+            return Ok(candles);
         }
     }
 }
