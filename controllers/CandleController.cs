@@ -24,7 +24,6 @@ namespace AtivoPlus.Controllers
         /// Obtém os candles para um símbolo, data e intervalo.
         /// </summary>
         /// <param name="symbol">Símbolo do ativo (ex: BTC/USD)</param>
-        /// <param name="type">Tipo do ativo: STOCK, ETF ou CRYPTO</param>
         /// <param name="date">Data inicial no formato yyyy-MM-dd</param>
         /// <param name="interval">Intervalo: 1day, 1week ou 1month</param>
         /// <returns>Lista de candles</returns>
