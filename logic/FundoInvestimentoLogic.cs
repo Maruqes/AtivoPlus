@@ -98,5 +98,55 @@ namespace AtivoPlus.Logic
             }
             return new OkObjectResult(fundos);
         }
+
+        public static async Task<ActionResult<LucroReturn>> GetLucroById(AppDbContext db, int fundoInvestimento, string username)
+        {
+            int? userId = await UserLogic.GetUserID(db, username);
+            if (userId == null)
+            {
+                return new UnauthorizedObjectResult("User not found");
+            }
+
+            FundoInvestimento? fundo = await db.GetFundoInvestimentoById(fundoInvestimento);
+            if (fundo == null)
+            {
+                return new NotFoundObjectResult("Fundo investimento not found");
+            }
+
+            AtivoFinanceiro? ativoFinanceiro = await db.GetAtivoFinanceiroById(fundo.AtivoFinaceiroId);
+            if (ativoFinanceiro == null)
+            {
+                return new NotFoundObjectResult("Ativo financeiro not found");
+            }
+            if (ativoFinanceiro.UserId != userId)
+            {
+                return new UnauthorizedObjectResult("User is not the owner of the asset, trying to do something fishy?");
+            }
+
+            List<Candle>? today_candle = await TwelveDataLogic.GetCandles(fundo.AtivoSigla, db, "1day", DateTime.UtcNow.AddDays(-1));
+            if (today_candle == null || today_candle.Count == 0)
+            {
+                return new NotFoundObjectResult("Candle not found for today");
+            }
+
+            List<Candle>? bought_candle = await TwelveDataLogic.GetCandles(fundo.AtivoSigla, db, "1day", fundo.DataCriacao);
+            if (bought_candle == null || bought_candle.Count == 0)
+            {
+                return new NotFoundObjectResult("Candle not found for the date of purchase");
+            }
+            decimal valorCompra = bought_candle[0].Close;
+            decimal valorVenda = today_candle[0].Close;
+            decimal lucro = (valorVenda - valorCompra) * fundo.MontanteInvestido / valorCompra;
+
+            LucroReturn lucroReturn = new LucroReturn
+            {
+                Base = fundo.MontanteInvestido,
+                Lucro = lucro,
+                Total = fundo.MontanteInvestido + lucro,
+                PercentagemLucro = (lucro / fundo.MontanteInvestido) * 100,
+                Despesas = 0
+            };
+            return new OkObjectResult(lucroReturn);
+        }
     }
 }

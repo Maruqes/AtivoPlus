@@ -113,5 +113,52 @@ namespace AtivoPlus.Logic
             }
             return new OkObjectResult(depositos);
         }
+
+        public static async Task<ActionResult<LucroReturn>> GetLucroById(AppDbContext db, int depositoPrazoId, string username)
+        {
+            int? userId = await UserLogic.GetUserID(db, username);
+            if (userId == null)
+            {
+                return new UnauthorizedObjectResult("User not found");
+            }
+            DepositoPrazo? deposito = await db.GetDepositoPrazoById(depositoPrazoId);
+            if (deposito == null)
+            {
+                return new NotFoundObjectResult("Deposito not found");
+            }
+
+            AtivoFinanceiro? ativoFinanceiro = await db.GetAtivoFinanceiroById(deposito.AtivoFinaceiroId);
+            if (ativoFinanceiro == null)
+            {
+                return new NotFoundObjectResult("Ativo financeiro not found");
+            }
+            if (ativoFinanceiro.UserId != userId)
+            {
+                return new UnauthorizedObjectResult("User is not the owner of the asset, trying to do something fishy?");
+            }
+
+            DateTime dataCriacao = deposito.DataCriacao;
+            DateTime dataAtual = DateTime.UtcNow;
+            int monthsElapsed = ((dataAtual.Year - dataCriacao.Year) * 12) + dataAtual.Month - dataCriacao.Month;
+            decimal taxaMensal = (decimal)deposito.TaxaJuroAnual / 100m / 12m;
+
+            decimal fator = 1m;
+            for (int i = 0; i < monthsElapsed; i++)
+            {
+                fator *= (1 + taxaMensal);
+            }
+
+            decimal valorLucro = deposito.ValorInvestido * (fator - 1);
+
+            LucroReturn lucroReturn = new LucroReturn
+            {
+                Base = deposito.ValorInvestido,
+                Lucro = valorLucro,
+                Total = deposito.ValorInvestido + valorLucro,
+                PercentagemLucro = (valorLucro / deposito.ValorInvestido) * 100,
+                Despesas = (deposito.ValorAnualDespesasEstimadas / 12) * monthsElapsed
+            };
+            return new OkObjectResult(lucroReturn);
+        }
     }
 }

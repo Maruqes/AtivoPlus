@@ -109,5 +109,16 @@ namespace AtivoPlus.Controllers
             }
             return await ImovelArrendadoLogic.AtualizarImovelArrendado(db, request, username);
         }
+
+        [HttpGet("getLucroById")]
+        public async Task<ActionResult<LucroReturn>> GetLucroById(int imovelArrendadoId)
+        {
+            string username = UserLogic.CheckUserLoggedRequest(Request);
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+            return await ImovelArrendadoLogic.GetLucroById(db, imovelArrendadoId, username);
+        }
     }
 }
