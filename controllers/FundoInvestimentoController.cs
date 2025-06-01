@@ -64,6 +64,17 @@ namespace AtivoPlus.Controllers
             return await FundoInvestimentoLogic.GetAllFundoInvestimentos(db, username);
         }
 
+        [HttpGet("getLucroById")]
+        public async Task<ActionResult<LucroReturn>> GetLucroById(int fundoInvestimentoId)
+        {
+            string username = UserLogic.CheckUserLoggedRequest(Request);
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+            return await FundoInvestimentoLogic.GetLucroById(db, fundoInvestimentoId, username);
+        }
+
         // [HttpGet("commodities")]
         // public ActionResult GetCommodities()
         // {

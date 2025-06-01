@@ -151,6 +151,46 @@ namespace AtivoPlus.Logic
             return new OkResult();
         }
 
+        public static async Task<ActionResult<LucroReturn>> GetLucroById(AppDbContext db, int imovelArrendadoId, string username)
+        {
+            int? userId = await UserLogic.GetUserID(db, username);
+            if (userId == null)
+            {
+                return new UnauthorizedObjectResult("User not found");
+            }
+
+            ImovelArrendado? imovel = await db.GetImovelArrendadoById(imovelArrendadoId);
+            if (imovel == null)
+            {
+                return new NotFoundObjectResult("Imóvel arrendado not found");
+            }
+
+            AtivoFinanceiro? ativoFinanceiro = await db.GetAtivoFinanceiroById(imovel.AtivoFinaceiroId);
+            if (ativoFinanceiro == null)
+            {
+                return new NotFoundObjectResult("Ativo financeiro not found");
+            }
+            if (ativoFinanceiro.UserId != userId)
+            {
+                return new UnauthorizedObjectResult("User is not the owner of the asset, trying to do something fishy?");
+            }
+
+            // Calculate lucro
+            DateTime dataAtual = DateTime.UtcNow;
+            DateTime dataCriacao = imovel.DataCriacao;
+            decimal baseLucro = imovel.ValorRenda * ((decimal)(dataAtual - dataCriacao).TotalDays / 30);
+
+
+            LucroReturn lucroReturn = new LucroReturn
+            {
+                Base = imovel.ValorImovel,
+                Lucro = baseLucro,
+                Total = imovel.ValorImovel + baseLucro,
+                PercentagemLucro = (baseLucro / imovel.ValorImovel) * 100,
+                Despesas = (imovel.ValorAnualDespesasEstimadas / 12) * ((decimal)(dataAtual - dataCriacao).TotalDays / 30)
+            };
+            return new OkObjectResult(lucroReturn);
+        }
 
 
     }

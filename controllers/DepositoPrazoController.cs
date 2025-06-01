@@ -13,6 +13,16 @@ using Newtonsoft.Json.Linq;
 namespace AtivoPlus.Controllers
 {
 
+    public class LucroReturn
+    {
+        public decimal Base { get; set; }
+        public decimal Lucro { get; set; }
+        public decimal Total { get; set; }
+        public decimal PercentagemLucro { get; set; }
+
+        public decimal Despesas { get; set; }
+    }
+
 
     public class DepositoPrazoRequest
     {
@@ -69,6 +79,17 @@ namespace AtivoPlus.Controllers
                 return Unauthorized();
             }
             return await DepositoPrazoLogic.GetAllDepositoPrazos(db, username);
+        }
+
+        [HttpGet("getLucroById")]
+        public async Task<ActionResult<LucroReturn>> GetLucroById(int depositoPrazoId)
+        {
+            string username = UserLogic.CheckUserLoggedRequest(Request);
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+            return await DepositoPrazoLogic.GetLucroById(db, depositoPrazoId, username);
         }
     }
 }
