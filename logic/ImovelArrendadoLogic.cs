@@ -180,13 +180,18 @@ namespace AtivoPlus.Logic
             DateTime dataCriacao = imovel.DataCriacao;
             decimal baseLucro = imovel.ValorRenda * ((decimal)(dataAtual - dataCriacao).TotalDays / 30);
 
+            // Validate to prevent division by zero
+            if (imovel.ValorImovel <= 0)
+            {
+                return new BadRequestObjectResult("Invalid property value for profit calculation");
+            }
 
             LucroReturn lucroReturn = new LucroReturn
             {
                 Base = imovel.ValorImovel,
                 Lucro = baseLucro,
                 Total = imovel.ValorImovel + baseLucro,
-                PercentagemLucro = (baseLucro / imovel.ValorImovel) * 100,
+                PercentagemLucro = imovel.ValorImovel > 0 ? (baseLucro / imovel.ValorImovel) * 100 : 0,
                 Despesas = (imovel.ValorAnualDespesasEstimadas / 12) * ((decimal)(dataAtual - dataCriacao).TotalDays / 30)
             };
             return new OkObjectResult(lucroReturn);

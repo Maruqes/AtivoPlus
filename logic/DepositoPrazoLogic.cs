@@ -148,6 +148,12 @@ namespace AtivoPlus.Logic
                 fator *= (1 + taxaMensal);
             }
 
+            // Validate to prevent division by zero
+            if (deposito.ValorInvestido <= 0)
+            {
+                return new BadRequestObjectResult("Invalid investment value for profit calculation");
+            }
+
             decimal valorLucro = deposito.ValorInvestido * (fator - 1);
 
             LucroReturn lucroReturn = new LucroReturn
@@ -155,7 +161,7 @@ namespace AtivoPlus.Logic
                 Base = deposito.ValorInvestido,
                 Lucro = valorLucro,
                 Total = deposito.ValorInvestido + valorLucro,
-                PercentagemLucro = (valorLucro / deposito.ValorInvestido) * 100,
+                PercentagemLucro = deposito.ValorInvestido > 0 ? (valorLucro / deposito.ValorInvestido) * 100 : 0,
                 Despesas = (deposito.ValorAnualDespesasEstimadas / 12) * monthsElapsed
             };
             return new OkObjectResult(lucroReturn);
