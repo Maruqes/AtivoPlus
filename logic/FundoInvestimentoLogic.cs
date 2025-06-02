@@ -136,6 +136,17 @@ namespace AtivoPlus.Logic
             }
             decimal valorCompra = bought_candle[0].Close;
             decimal valorVenda = today_candle[0].Close;
+
+            // Validate to prevent division by zero
+            if (valorCompra <= 0)
+            {
+                return new BadRequestObjectResult("Invalid purchase price (zero or negative)");
+            }
+            if (fundo.MontanteInvestido <= 0)
+            {
+                return new BadRequestObjectResult("Invalid investment amount for profit calculation");
+            }
+
             decimal lucro = (valorVenda - valorCompra) * fundo.MontanteInvestido / valorCompra;
 
             LucroReturn lucroReturn = new LucroReturn
@@ -143,7 +154,7 @@ namespace AtivoPlus.Logic
                 Base = fundo.MontanteInvestido,
                 Lucro = lucro,
                 Total = fundo.MontanteInvestido + lucro,
-                PercentagemLucro = (lucro / fundo.MontanteInvestido) * 100,
+                PercentagemLucro = fundo.MontanteInvestido > 0 ? (lucro / fundo.MontanteInvestido) * 100 : 0,
                 Despesas = 0
             };
             return new OkObjectResult(lucroReturn);
