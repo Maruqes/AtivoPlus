@@ -134,6 +134,12 @@ namespace AtivoPlus.Logic
                 }
             }
 
+            if (today_candle[0].Volume == -69 && today_candle[0].Close == 1)
+            {
+                return new NotFoundObjectResult("Nao temos acesso com a api gratis symbol: " + fundo.AtivoSigla);
+            }
+
+
             List<Candle>? bought_candle = await TwelveDataLogic.GetCandles(fundo.AtivoSigla, db, "1day", fundo.DataCriacao);
             if (bought_candle == null || bought_candle.Count == 0)
             {

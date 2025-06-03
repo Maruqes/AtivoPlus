@@ -164,6 +164,23 @@ namespace AtivoPlus.Logic
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
+                if (content.Contains("is not available with your plan"))
+                {
+                    return new List<Candle>
+                    {
+                        new Candle
+                        {
+                            DateTime = DateTime.UtcNow,
+                            Open = 1,
+                            High = 1,
+                            Low = 1,
+                            Close = 1,
+                            Volume = -69,
+                            Symbol = symbol
+                        }
+                    };
+                }
+
                 var jObject = JObject.Parse(content);
 
                 // Verifica se a API retornou um erro
