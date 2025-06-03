@@ -126,6 +126,11 @@ namespace AtivoPlus.Logic
             List<Candle>? today_candle = await TwelveDataLogic.GetCandles(fundo.AtivoSigla, db, "1day", DateTime.UtcNow.AddDays(-1));
             if (today_candle == null || today_candle.Count == 0)
             {
+                if (today_candle[0].Volume == -69 && today_candle[0].Close == 1)
+                {
+                    return new NotFoundObjectResult("Nao temos acesso com a api gratis symbol: " + fundo.AtivoSigla);
+                }
+
                 //try yesterday candle if it doesn't exist for today return error
                 today_candle = await TwelveDataLogic.GetCandles(fundo.AtivoSigla, db, "1day", DateTime.UtcNow.AddDays(-2));
                 if (today_candle == null || today_candle.Count == 0)
@@ -134,10 +139,6 @@ namespace AtivoPlus.Logic
                 }
             }
 
-            if (today_candle[0].Volume == -69 && today_candle[0].Close == 1)
-            {
-                return new NotFoundObjectResult("Nao temos acesso com a api gratis symbol: " + fundo.AtivoSigla);
-            }
 
 
             List<Candle>? bought_candle = await TwelveDataLogic.GetCandles(fundo.AtivoSigla, db, "1day", fundo.DataCriacao);
