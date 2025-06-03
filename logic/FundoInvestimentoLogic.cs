@@ -148,6 +148,7 @@ namespace AtivoPlus.Logic
             decimal valorCompra = bought_candle[0].Close;
             decimal valorVenda = today_candle[0].Close;
 
+
             // Validate to prevent division by zero
             if (valorCompra <= 0)
             {
@@ -159,13 +160,14 @@ namespace AtivoPlus.Logic
             }
 
             decimal lucro = (valorVenda - valorCompra) * fundo.MontanteInvestido / valorCompra;
+            decimal percentagemLucro = (lucro / fundo.MontanteInvestido) * 100;
 
             LucroReturn lucroReturn = new LucroReturn
             {
                 Base = fundo.MontanteInvestido,
                 Lucro = lucro,
                 Total = fundo.MontanteInvestido + lucro,
-                PercentagemLucro = fundo.MontanteInvestido > 0 ? (lucro / fundo.MontanteInvestido) * 100 : 0,
+                PercentagemLucro = percentagemLucro,
                 Despesas = 0
             };
             return new OkObjectResult(lucroReturn);
