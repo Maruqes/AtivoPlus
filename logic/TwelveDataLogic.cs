@@ -176,7 +176,8 @@ namespace AtivoPlus.Logic
 
             try
             {
-                string url = $"https://api.twelvedata.com/time_series?symbol={symbol}&interval={interval}&start_date={startDate:yyyy-MM-dd}&apikey={_apiKey}";
+                string encodedSymbol = Uri.EscapeDataString(symbol);
+                string url = $"https://api.twelvedata.com/time_series?symbol={encodedSymbol}&interval={interval}&start_date={startDate:yyyy-MM-dd}&apikey={_apiKey}";
                 var response = await _httpClient.GetAsync(url);
                 if (!response.IsSuccessStatusCode)
                 {
@@ -320,12 +321,13 @@ namespace AtivoPlus.Logic
 
         public static bool DoesSymbolExists(string symbol)
         {
-            if (string.IsNullOrWhiteSpace(symbol) || _allEntries.Count == 0)
-                return false;
+            return true;
+            // if (string.IsNullOrWhiteSpace(symbol) || _allEntries.Count == 0)
+            //     return false;
 
-            // Procura direta em lista plana
-            return _allEntries.Any(j =>
-                string.Equals(j["symbol"]?.ToString(), symbol, StringComparison.OrdinalIgnoreCase));
+            // // Procura direta em lista plana
+            // return _allEntries.Any(j =>
+            //     string.Equals(j["symbol"]?.ToString(), symbol, StringComparison.OrdinalIgnoreCase));
         }
 
         public static List<JObject> SearchJsonFiles(string searchTerm, int numberOfResults = 50)
