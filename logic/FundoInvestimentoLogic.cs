@@ -20,7 +20,7 @@ namespace AtivoPlus.Logic
 
             if (TwelveDataLogic.DoesSymbolExists(fundoInvestimento.AtivoSigla) == false)
             {
-                return new BadRequestObjectResult("Ativo financeiro não encontrado");
+                return new BadRequestObjectResult("Ativo financeiro twelve não encontrado");
             }
 
 
