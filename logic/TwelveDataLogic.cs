@@ -101,6 +101,78 @@ namespace AtivoPlus.Logic
             }
         }
 
+        public static List<Candle> FilterCandlesByInterval(List<Candle> candles, string interval)
+        {
+            if (candles == null || candles.Count == 0 || interval == "1day")
+            {
+                return candles ?? new List<Candle>();
+            }
+
+            var orderedCandles = candles.OrderBy(c => c.DateTime).ToList();
+            var filteredCandles = new List<Candle>();
+
+            switch (interval)
+            {
+                case "1week":
+                    // Agrupar por semana (segunda-feira como início da semana)
+                    var weeklyGroups = orderedCandles
+                        .GroupBy(c => GetWeekStartDate(c.DateTime))
+                        .OrderBy(g => g.Key);
+
+                    foreach (var weekGroup in weeklyGroups)
+                    {
+                        var weekCandles = weekGroup.OrderBy(c => c.DateTime).ToList();
+                        var weeklyCandle = new Candle
+                        {
+                            Symbol = weekCandles.First().Symbol,
+                            DateTime = weekGroup.Key, // Segunda-feira da semana
+                            Open = weekCandles.First().Open,
+                            High = weekCandles.Max(c => c.High),
+                            Low = weekCandles.Min(c => c.Low),
+                            Close = weekCandles.Last().Close,
+                            Volume = weekCandles.Sum(c => c.Volume)
+                        };
+                        filteredCandles.Add(weeklyCandle);
+                    }
+                    break;
+
+                case "1month":
+                    // Agrupar por mês
+                    var monthlyGroups = orderedCandles
+                        .GroupBy(c => new { c.DateTime.Year, c.DateTime.Month })
+                        .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month);
+
+                    foreach (var monthGroup in monthlyGroups)
+                    {
+                        var monthCandles = monthGroup.OrderBy(c => c.DateTime).ToList();
+                        var monthlyCandle = new Candle
+                        {
+                            Symbol = monthCandles.First().Symbol,
+                            DateTime = new DateTime(monthGroup.Key.Year, monthGroup.Key.Month, 1),
+                            Open = monthCandles.First().Open,
+                            High = monthCandles.Max(c => c.High),
+                            Low = monthCandles.Min(c => c.Low),
+                            Close = monthCandles.Last().Close,
+                            Volume = monthCandles.Sum(c => c.Volume)
+                        };
+                        filteredCandles.Add(monthlyCandle);
+                    }
+                    break;
+
+                default:
+                    return orderedCandles;
+            }
+
+            return filteredCandles;
+        }
+
+        private static DateTime GetWeekStartDate(DateTime date)
+        {
+            // Calcular a segunda-feira da semana
+            int daysFromMonday = ((int)date.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
+            return date.Date.AddDays(-daysFromMonday);
+        }
+
         public static DateTime CalculateDateTimeFrom(int outputSize, string interval)
         {
             DateTime dateTimeFrom = DateTime.UtcNow.Date.AddDays(1);
@@ -164,8 +236,10 @@ namespace AtivoPlus.Logic
 
                 if (hasStartData && hasRecentData)
                 {
-                    Console.WriteLine($"Candles encontrados na DB para {symbol}: {dbCandles.Count} registros");
-                    return dbCandles;
+                    // Filtrar candles baseado no intervalo solicitado
+                    var filteredCandles = FilterCandlesByInterval(dbCandles, interval);
+                    Console.WriteLine($"Candles encontrados na DB para {symbol}: {dbCandles.Count} registros, filtrados para {interval}: {filteredCandles.Count} registros");
+                    return filteredCandles;
                 }
 
                 Console.WriteLine($"Dados insuficientes na DB. Início: {hasStartData}, Recente: {hasRecentData}");
@@ -277,8 +351,10 @@ namespace AtivoPlus.Logic
                     }
                 });
 
-
-                return candles;
+                // Filtrar candles baseado no intervalo solicitado antes de retornar
+                var filteredApiCandles = FilterCandlesByInterval(candles, interval);
+                Console.WriteLine($"Candles da API para {symbol}: {candles.Count} registros, filtrados para {interval}: {filteredApiCandles.Count} registros");
+                return filteredApiCandles;
             }
             catch (Exception ex)
             {
