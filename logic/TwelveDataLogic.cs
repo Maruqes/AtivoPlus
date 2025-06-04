@@ -250,8 +250,8 @@ namespace AtivoPlus.Logic
 
             try
             {
-                string encodedSymbol = Uri.EscapeDataString(symbol);
-                string url = $"https://api.twelvedata.com/time_series?symbol={encodedSymbol}&interval={interval}&start_date={startDate:yyyy-MM-dd}&apikey={_apiKey}";
+                // string encodedSymbol = Uri.EscapeDataString(symbol);
+                string url = $"https://api.twelvedata.com/time_series?symbol={symbol}&interval={interval}&start_date={startDate:yyyy-MM-dd}&apikey={_apiKey}";
                 var response = await _httpClient.GetAsync(url);
                 if (!response.IsSuccessStatusCode)
                 {
