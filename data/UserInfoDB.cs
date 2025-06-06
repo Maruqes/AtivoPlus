@@ -58,5 +58,51 @@ namespace AtivoPlus.Data
 
             return await UsersInfo.FindAsync(id);
         }
+
+        public async Task<string> GetEmailByUserId(int id)
+        {
+            if (await UserLogic.CheckIfUserExistsById(this, id) == false)
+            {
+                return string.Empty;
+            }
+
+            UserInfo? userInfo = await UsersInfo.FindAsync(id);
+            if (userInfo == null)
+            {
+                return string.Empty;
+            }
+
+            return userInfo.Email;
+        }
+
+        public async Task<string> GetEmailByUsername(string username)
+        {
+            if (await UserLogic.CheckIfUserExists(this, username) == false)
+            {
+                return string.Empty;
+            }
+
+            //get user id by username
+            User? user = await GetUserByUsername(username);
+            if (user == null)
+            {
+                return string.Empty;
+            }
+
+            //get user info by user id
+            UserInfo? userInfo = await UsersInfo.FindAsync(user.Id);
+            if (userInfo == null)
+            {
+                return string.Empty;
+            }
+            
+            //return email  
+            if (string.IsNullOrEmpty(userInfo.Email))
+            {
+                return string.Empty;
+            }
+
+            return userInfo.Email;
+        }
     }
 }

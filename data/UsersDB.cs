@@ -39,5 +39,6 @@ namespace AtivoPlus.Data
                 .FromSqlInterpolated($"SELECT * FROM \"Users\" WHERE \"Username\" = {Username}")
                 .AnyAsync();
         }
+
     }
 }

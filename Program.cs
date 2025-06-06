@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using DotNetEnv;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
+using Eatease.Service;
 
 
 
@@ -108,7 +109,6 @@ if (string.IsNullOrEmpty(apiKey))
     Environment.Exit(1);
 }
 TwelveDataLogic.StartTwelveDataLogic(apiKey);
-
 app.UseStaticFiles();
 app.UseRouting();
 
