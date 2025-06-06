@@ -74,5 +74,28 @@ namespace AtivoPlus.Controllers
 
             return Ok();
         }
+
+        [HttpPost("changepassword/{username}")]
+        public async Task<ActionResult<string>> ChangePasswordAsync(string username)
+        {
+            string returnUrl = await UserLogic.RequestPassUpdate(db, username);
+            return Ok(returnUrl);
+        }
+
+
+        public class UpdatePasswordRequest
+        {
+            public string Token { get; set; } = string.Empty;
+            public string NewPassword { get; set; } = string.Empty;
+        }
+
+        [HttpPost("resetpassword")]
+        public async Task<ActionResult<bool>> ResetPassword([FromBody] UpdatePasswordRequest req)
+        {
+
+            return Ok(await UserLogic.UpdatePassword(db, req.Token, req.NewPassword));
+        }
+
+
     }
 }
