@@ -20,7 +20,7 @@ namespace AtivoPlus.Logic
 
             if (TwelveDataLogic.DoesSymbolExists(fundoInvestimento.AtivoSigla) == false)
             {
-                return new BadRequestObjectResult("Ativo financeiro não encontrado");
+                return new BadRequestObjectResult("Ativo financeiro twelve não encontrado");
             }
 
 
@@ -126,8 +126,19 @@ namespace AtivoPlus.Logic
             List<Candle>? today_candle = await TwelveDataLogic.GetCandles(fundo.AtivoSigla, db, "1day", DateTime.UtcNow.AddDays(-1));
             if (today_candle == null || today_candle.Count == 0)
             {
-                return new NotFoundObjectResult("Candle not found for today");
+                //try yesterday candle if it doesn't exist for today return error
+                today_candle = await TwelveDataLogic.GetCandles(fundo.AtivoSigla, db, "1day", DateTime.UtcNow.AddDays(-2));
+                if (today_candle == null || today_candle.Count == 0)
+                {
+                    return new NotFoundObjectResult("Candle not found for yesterday or today");
+                }
             }
+
+            if (today_candle[0].Volume == -69 && today_candle[0].Close == 1)
+            {
+                return new NotFoundObjectResult("Nao temos acesso com a api gratis symbol: " + fundo.AtivoSigla);
+            }
+
 
             List<Candle>? bought_candle = await TwelveDataLogic.GetCandles(fundo.AtivoSigla, db, "1day", fundo.DataCriacao);
             if (bought_candle == null || bought_candle.Count == 0)
@@ -136,6 +147,7 @@ namespace AtivoPlus.Logic
             }
             decimal valorCompra = bought_candle[0].Close;
             decimal valorVenda = today_candle[0].Close;
+
 
             // Validate to prevent division by zero
             if (valorCompra <= 0)
@@ -148,13 +160,14 @@ namespace AtivoPlus.Logic
             }
 
             decimal lucro = (valorVenda - valorCompra) * fundo.MontanteInvestido / valorCompra;
+            decimal percentagemLucro = (lucro / fundo.MontanteInvestido) * 100;
 
             LucroReturn lucroReturn = new LucroReturn
             {
                 Base = fundo.MontanteInvestido,
                 Lucro = lucro,
                 Total = fundo.MontanteInvestido + lucro,
-                PercentagemLucro = fundo.MontanteInvestido > 0 ? (lucro / fundo.MontanteInvestido) * 100 : 0,
+                PercentagemLucro = percentagemLucro,
                 Despesas = 0
             };
             return new OkObjectResult(lucroReturn);

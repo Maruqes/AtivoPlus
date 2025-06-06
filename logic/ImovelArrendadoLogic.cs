@@ -105,7 +105,7 @@ namespace AtivoPlus.Logic
             var imoveis = await db.GetImovelArrendadosByUserId(userId.Value);
             if (imoveis == null || imoveis.Count == 0)
             {
-                return new NotFoundObjectResult("No real estate entries found");
+                return new OkObjectResult("No real estate entries found");
             }
             return new OkObjectResult(imoveis);
         }

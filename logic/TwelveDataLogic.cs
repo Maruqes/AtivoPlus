@@ -82,19 +82,95 @@ namespace AtivoPlus.Logic
         {
             try
             {
+                // Buscar candles no período especificado
                 var candles = await db.GetCandleBySymbolAndDateTime(symbol, dateTimeFrom, dateTimeTo);
+
                 if (candles == null || candles.Count == 0)
                 {
-                    Console.WriteLine($"Sem candles no banco de dados para o símbolo {symbol} entre {dateTimeFrom} e {dateTimeTo}");
+                    Console.WriteLine($"Nenhum candle encontrado na DB para {symbol} entre {dateTimeFrom:yyyy-MM-dd} e {dateTimeTo:yyyy-MM-dd}");
                     return null;
                 }
-                return candles;
+
+                Console.WriteLine($"Encontrados {candles.Count} candles na DB para {symbol}");
+                return candles.OrderBy(c => c.DateTime).ToList();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao verificar candles no banco de dados: {ex.Message}");
+                Console.WriteLine($"Erro ao verificar candles na DB: {ex.Message}");
                 return null;
             }
+        }
+
+        public static List<Candle> FilterCandlesByInterval(List<Candle> candles, string interval)
+        {
+            if (candles == null || candles.Count == 0 || interval == "1day")
+            {
+                return candles ?? new List<Candle>();
+            }
+
+            var orderedCandles = candles.OrderBy(c => c.DateTime).ToList();
+            var filteredCandles = new List<Candle>();
+
+            switch (interval)
+            {
+                case "1week":
+                    // Agrupar por semana (segunda-feira como início da semana)
+                    var weeklyGroups = orderedCandles
+                        .GroupBy(c => GetWeekStartDate(c.DateTime))
+                        .OrderBy(g => g.Key);
+
+                    foreach (var weekGroup in weeklyGroups)
+                    {
+                        var weekCandles = weekGroup.OrderBy(c => c.DateTime).ToList();
+                        var weeklyCandle = new Candle
+                        {
+                            Symbol = weekCandles.First().Symbol,
+                            DateTime = weekGroup.Key, // Segunda-feira da semana
+                            Open = weekCandles.First().Open,
+                            High = weekCandles.Max(c => c.High),
+                            Low = weekCandles.Min(c => c.Low),
+                            Close = weekCandles.Last().Close,
+                            Volume = weekCandles.Sum(c => c.Volume)
+                        };
+                        filteredCandles.Add(weeklyCandle);
+                    }
+                    break;
+
+                case "1month":
+                    // Agrupar por mês
+                    var monthlyGroups = orderedCandles
+                        .GroupBy(c => new { c.DateTime.Year, c.DateTime.Month })
+                        .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month);
+
+                    foreach (var monthGroup in monthlyGroups)
+                    {
+                        var monthCandles = monthGroup.OrderBy(c => c.DateTime).ToList();
+                        var monthlyCandle = new Candle
+                        {
+                            Symbol = monthCandles.First().Symbol,
+                            DateTime = new DateTime(monthGroup.Key.Year, monthGroup.Key.Month, 1),
+                            Open = monthCandles.First().Open,
+                            High = monthCandles.Max(c => c.High),
+                            Low = monthCandles.Min(c => c.Low),
+                            Close = monthCandles.Last().Close,
+                            Volume = monthCandles.Sum(c => c.Volume)
+                        };
+                        filteredCandles.Add(monthlyCandle);
+                    }
+                    break;
+
+                default:
+                    return orderedCandles;
+            }
+
+            return filteredCandles;
+        }
+
+        private static DateTime GetWeekStartDate(DateTime date)
+        {
+            // Calcular a segunda-feira da semana
+            int daysFromMonday = ((int)date.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
+            return date.Date.AddDays(-daysFromMonday);
         }
 
         public static DateTime CalculateDateTimeFrom(int outputSize, string interval)
@@ -132,30 +208,50 @@ namespace AtivoPlus.Logic
                 return null;
             }
 
-            List<Candle>? dbCandles = await CheckDbCandles(db, symbol, LastDay, DateTime.UtcNow);
+            // Se LastDay não foi especificado, usar uma data padrão
+            if (LastDay == default)
+            {
+                LastDay = DateTime.UtcNow.AddDays(-30); // Últimos 30 dias por padrão
+            }
+
+            // Normalizar datas para comparação (apenas a parte da data, sem hora)
+            DateTime startDate = LastDay.Date;
+            DateTime endDate = DateTime.UtcNow.Date;
+
+            // Verificar se já temos candles suficientes na DB
+            List<Candle>? dbCandles = await CheckDbCandles(db, symbol, startDate, endDate);
             if (dbCandles != null && dbCandles.Count > 0)
             {
-                var lastCandle = dbCandles.OrderBy(c => c.DateTime).Last();
-                DateTime yesterday = DateTime.UtcNow.AddDays(-1).Date;
+                // Verificar se temos dados suficientes no período solicitado
+                var orderedCandles = dbCandles.OrderBy(c => c.DateTime).ToList();
+                var firstCandle = orderedCandles.First();
+                var lastCandle = orderedCandles.Last();
 
-                var firstCandle = dbCandles.OrderBy(c => c.DateTime).First();
+                Console.WriteLine($"DB - Primeiro candle: {firstCandle.DateTime.Date}, Último candle: {lastCandle.DateTime.Date}");
+                Console.WriteLine($"Solicitado - De: {startDate}, Até: {endDate}");
 
-                Console.WriteLine($"lastCandle: {lastCandle.DateTime}");
-                Console.WriteLine($"Yesterday: {yesterday}");
-                Console.WriteLine($"FirstCandle: {firstCandle.DateTime}");
-                Console.WriteLine($"LastDay: {LastDay}");
+                // Verificar se temos dados para o período solicitado
+                bool hasStartData = firstCandle.DateTime.Date <= startDate.AddDays(1); // Tolerância de 1 dia
+                bool hasRecentData = lastCandle.DateTime.Date >= endDate.AddDays(-2); // Tolerância de 2 dias (fins de semana)
 
-                if (Math.Abs((lastCandle.DateTime.Date - yesterday).Days) <= 2 &&
-                    Math.Abs((firstCandle.DateTime.Date - LastDay.Date).Days) <= 2)
+                if (hasStartData && hasRecentData)
                 {
-                    Console.WriteLine($"Candles já existem no banco de dados para o símbolo {symbol} entre {firstCandle.DateTime} e {lastCandle.DateTime}");
-                    return dbCandles;
+                    // Filtrar candles baseado no intervalo solicitado
+                    var filteredCandles = FilterCandlesByInterval(dbCandles, interval);
+                    Console.WriteLine($"Candles encontrados na DB para {symbol}: {dbCandles.Count} registros, filtrados para {interval}: {filteredCandles.Count} registros");
+                    return filteredCandles;
                 }
+
+                Console.WriteLine($"Dados insuficientes na DB. Início: {hasStartData}, Recente: {hasRecentData}");
             }
+
+            // Buscar dados da API
+            Console.WriteLine($"Buscando dados da API para {symbol} de {startDate:yyyy-MM-dd} até {endDate:yyyy-MM-dd}");
 
             try
             {
-                string url = $"https://api.twelvedata.com/time_series?symbol={symbol}&interval={interval}&start_date={LastDay.ToString("yyyy-MM-dd")}&apikey={_apiKey}";
+                // string encodedSymbol = Uri.EscapeDataString(symbol);
+                string url = $"https://api.twelvedata.com/time_series?symbol={symbol}&interval={interval}&start_date={startDate:yyyy-MM-dd}&apikey={_apiKey}";
                 var response = await _httpClient.GetAsync(url);
                 if (!response.IsSuccessStatusCode)
                 {
@@ -164,6 +260,23 @@ namespace AtivoPlus.Logic
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
+                if (content.Contains("is not available with your plan"))
+                {
+                    return new List<Candle>
+                    {
+                        new Candle
+                        {
+                            DateTime = DateTime.UtcNow,
+                            Open = 1,
+                            High = 1,
+                            Low = 1,
+                            Close = 1,
+                            Volume = -69,
+                            Symbol = symbol
+                        }
+                    };
+                }
+
                 var jObject = JObject.Parse(content);
 
                 // Verifica se a API retornou um erro
@@ -238,8 +351,10 @@ namespace AtivoPlus.Logic
                     }
                 });
 
-
-                return candles;
+                // Filtrar candles baseado no intervalo solicitado antes de retornar
+                var filteredApiCandles = FilterCandlesByInterval(candles, interval);
+                Console.WriteLine($"Candles da API para {symbol}: {candles.Count} registros, filtrados para {interval}: {filteredApiCandles.Count} registros");
+                return filteredApiCandles;
             }
             catch (Exception ex)
             {
@@ -282,12 +397,13 @@ namespace AtivoPlus.Logic
 
         public static bool DoesSymbolExists(string symbol)
         {
-            if (string.IsNullOrWhiteSpace(symbol) || _allEntries.Count == 0)
-                return false;
+            return true;
+            // if (string.IsNullOrWhiteSpace(symbol) || _allEntries.Count == 0)
+            //     return false;
 
-            // Procura direta em lista plana
-            return _allEntries.Any(j =>
-                string.Equals(j["symbol"]?.ToString(), symbol, StringComparison.OrdinalIgnoreCase));
+            // // Procura direta em lista plana
+            // return _allEntries.Any(j =>
+            //     string.Equals(j["symbol"]?.ToString(), symbol, StringComparison.OrdinalIgnoreCase));
         }
 
         public static List<JObject> SearchJsonFiles(string searchTerm, int numberOfResults = 50)
