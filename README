@@ -1,0 +1,130 @@
+````markdown
+# AtivoPlus
+
+Project developed as part of the **Software Engineering 2** course.
+
+## Description
+
+AtivoPlus is a financial asset management application that allows users to manage their investment portfolios in an organized and secure way. The system provides features for creating and managing portfolios, adding various types of financial assets, and permission-based access control.
+
+## Project Components
+
+- **Backend**: REST API built with ASP.NET Core and Entity Framework (this repository)
+- **Frontend**: Companion application available at [AtivoPlusFrontend](https://github.com/JotaBarbosaDev/AtivoPlusFrontend)
+
+## Main Features
+
+- **User Management**: Authentication and authorization system
+- **Portfolios**: Creation and management of investment portfolios
+- **Financial Assets**: Support for different asset types:
+  - Investment Funds
+  - Rented Properties
+  - Term Deposits
+- **Access Control**: Permission system with administrator levels
+- **External Integration**: Market data via the Twelve Data API
+- **Profit Calculation**: Investment return analysis
+
+## Technologies Used
+
+- **Backend**: ASP.NET Core 9.0, Entity Framework Core
+- **Database**: PostgreSQL
+- **Testing**: xUnit for unit tests
+- **Documentation**: Swagger/OpenAPI
+- **External APIs**: Twelve Data API for market data
+
+## Project Structure
+
+```
+AtivoPlus/
+├── controllers/     # REST API controllers
+├── data/           # Data access layer (Entity Framework)
+├── logic/          # Business logic
+├── models/         # Data models and entities
+├── AtivoPlus.Tests/ # Unit tests
+└── TwelveJson/     # Market data cache
+```
+
+## How to Run
+
+### Prerequisites
+- .NET 9.0 SDK
+- PostgreSQL
+- Twelve Data API key
+
+### Setup
+
+1. **Configure the PostgreSQL database**
+   ```bash
+   # Create PostgreSQL database
+   createdb ativoplus
+   ```
+
+2. **Configure environment variables**
+   ```bash
+   # Create a .env file at the project root
+   echo "TWELVE_API=your_api_key_here" > .env
+   ```
+
+3. **Configure the connection string**
+   - Edit `appsettings.json` with your database credentials
+
+4. **Run migrations**
+   ```bash
+   dotnet ef database update
+   ```
+
+5. **Start the application**
+   ```bash
+   dotnet run
+   ```
+
+The API will be available at `https://localhost:5001` with Swagger documentation.
+
+### Add Administrator
+
+```bash
+dotnet run -- --addadmin username
+```
+
+## Tests
+
+The project includes a complete unit test suite covering:
+- Financial asset business logic
+- Access control and permissions
+- Portfolio CRUD operations
+- Data validations
+
+Run the tests with:
+```bash
+dotnet test
+```
+
+## Main API Endpoints
+
+- `/api/carteira` - Portfolio management
+- `/api/ativo-financeiro` - Financial asset management
+- `/api/fundo-investimento` - Investment funds
+- `/api/deposito-prazo` - Term deposits
+- `/api/imovel-arrendado` - Rented properties
+- `/api/user` - User management
+- `/api/banco` - Bank management
+
+## Security Features
+
+- User-based authentication
+- Permission system (admin/user)
+- Resource ownership validation
+- Protection against unauthorized access
+
+## Market Data Integration
+
+The system integrates with the Twelve Data API to retrieve:
+- Real-time quotes
+- Historical price data
+- Information on stocks, ETFs, and cryptocurrencies
+
+## Contributors
+
+Project developed as part of the Software Engineering 2 course.
+
+````
